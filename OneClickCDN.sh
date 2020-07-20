@@ -114,7 +114,8 @@ function install_TS
 	echo 
 	echo "Traffic Server successfully installed!"
 	echo "Domain		Type(CDN/RevProxy)		OriginIP" > /etc/trafficserver/hostsavailable.sun
-	echo "trafficserver start" >> /etc/rc.local
+#	echo "trafficserver start" >> /etc/rc.local
+	run_on_startup
 	echo 
 }
 
@@ -717,6 +718,32 @@ function say_goodbye
 	echo "Bye!  Have a nice day."
 	echo 
 	key=0
+}
+
+function run_on_startup
+{
+	cat > /etc/systemd/system/trafficserver.service <<END
+
+[Unit]
+Description=Apache Traffic Server
+After=network.service systemd-networkd.service network-online.target dnsmasq.service
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/traffic_manager
+ExecReload=/usr/local/bin/traffic_ctl config reload
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=multi-user.target
+Enable Reverse Proxying
+
+END
+	
+	chmod 644 /etc/systemd/system/trafficserver.service
+	systemctl daemon-reload
+	systemctl enable trafficserver.service
 }
 
 function main
