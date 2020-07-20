@@ -10,7 +10,7 @@ A one-click shell script to set up a CDN node for your websites.
 * So on...
 
 ## System requirement
-* Ubuntu 20.04 LTS 64 bit
+* Ubuntu 20.04 LTS 64 bit or Debian 10 64 bit (experimental)
 * 1 IPv4
 * At least 512 MB RAM for running CDN instance
 * For the very first time, building the program from source requires about 1.5 GB RAM.  You may add SWAP to your VPS for this step.
@@ -28,3 +28,7 @@ For faster response, you can leave a message on this project webpage https://qin
 中文支持请访问 https://qing.su/article/oneclick-cdn.html
 
 Thank you!
+
+## Update log
+* 07/19/2020        v0.0.1        Script created.
+* 07/20/2020        v0.0.2        Added Debian 10 support; add systemd service.
