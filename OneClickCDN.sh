@@ -1,6 +1,6 @@
 #!/bin/bash
 #################################################################
-#    One-click CDN Installation Script v0.0.1                   #
+#    One-click CDN Installation Script v0.0.2                   #
 #    Written by shc (https://qing.su)                           #
 #    Github link: https://github.com/Har-Kuun/oneclickCDN       #
 #    Contact me: https://t.me/hsun94   E-mail: hi@qing.su       #
@@ -28,10 +28,10 @@ REVERSE_PROXY_MODE_ENABLED=OFF
 
 
 
-#By default, this script only works on Ubuntu 20.
+#By default, this script only works on Ubuntu 20.  It should also work on Debian 10, but only experimentally.
 #You can disable the OS check below to try to install it in Debian, or other Ubuntu versions.
 #The script will NOT work on CentOS and Fedora.
-#Please do note that if you do choose to use this script on OS other than Ubuntu 18/20, you might mess up your OS.  Please keep a backup of your server before installation.
+#Please do note that if you do choose to use this script on OS other than Ubuntu 20 or Debian 10, you might mess up your OS.  Please keep a backup of your server before installation.
 
 OS_CHECK_ENABLED=ON
 
@@ -48,41 +48,62 @@ OS_CHECK_ENABLED=ON
 
 function check_OS
 {
-    if [ -f /etc/lsb-release ]
-    then
-        cat /etc/lsb-release | grep "DISTRIB_RELEASE=18." >/dev/null
-        if [ $? = 0 ]
-        then
-            OS=UBUNTU18
+	if [ -f /etc/lsb-release ]
+	then
+		cat /etc/lsb-release | grep "DISTRIB_RELEASE=18." >/dev/null
+		if [ $? = 0 ]
+		then
+			OS=UBUNTU18
 			echo "Support of Ubuntu 18 is experimental.  You may get error in TLS handshakes."
 			echo "Please consider upgrading to Ubuntu 20 (simply run \"do-release-upgrade -d\")."
+			echo "Please tweak the OS_CHECK_ENABLED setting if you still wish to install on Ubuntu 18."
 			echo 
 			exit 1
-        else
-            cat /etc/lsb-release | grep "DISTRIB_RELEASE=20." >/dev/null
-            if [ $? = 0 ]
-            then
-                OS=UBUNTU20
-            else
-                echo "Sorry, this script only supports Ubuntu 20."
-                echo 
-                exit 1
-            fi
-        fi
-    else
-        echo "Sorry, this script only supports Ubuntu 20."
-        echo 
-        exit 1
-    fi
+		else
+			cat /etc/lsb-release | grep "DISTRIB_RELEASE=20." >/dev/null
+			if [ $? = 0 ]
+			then
+				OS=UBUNTU20
+			else
+				echo "Sorry, this script only supports Ubuntu 20 and Debian 10."
+				echo 
+				exit 1
+			fi
+		fi
+	elif [ -f /etc/debian_version ] ; then
+		cat /etc/debian_version | grep "^10." >/dev/null
+		if [ $? = 0 ] ; then
+			OS=DEBIAN10
+			echo "Support of Debian 10 is experimental.  Please report bugs."
+			echo 
+		else
+			cat /etc/debian_version | grep "^9." >/dev/null
+			if [ $? = 0 ] ; then
+				OS=DEBIAN9
+				echo "Support of Debian 9 is experimental.  You may get error in TLS handshakes."
+				echo "Please tweak the OS_CHECK_ENABLED setting if you still wish to install on Debian 9."
+				echo 
+				exit 1
+			else
+				echo "Sorry, this script only supports Ubuntu 20 and Debian 10."
+				echo 
+				exit 1
+			fi
+		fi
+	else
+		echo "Sorry, this script only supports Ubuntu 20 and Debian 10."
+		echo 
+		exit 1
+	fi
 }
 
 function check_TS
 {
-    if [ -f /usr/local/bin/trafficserver ] ; then
-        TS_INSTALLED=1
-    else
-        TS_INSTALLED=0
-    fi
+	if [ -f /usr/local/bin/trafficserver ] ; then
+		TS_INSTALLED=1
+	else
+		TS_INSTALLED=0
+	fi
 }
 
 
@@ -749,6 +770,7 @@ function main
 {
 	current_dir=$(pwd)
 	display_license
+	OS=UNSUPPORTED
 	if [ "x$OS_CHECK_ENABLED" != "xOFF" ] ; then
 		check_OS
 	fi
