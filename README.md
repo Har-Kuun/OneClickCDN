@@ -29,6 +29,10 @@ wget https://raw.githubusercontent.com/Har-Kuun/OneClickCDN/master/OneClickCDN.s
 sudo bash OneClickCDN.sh
 ```
 * If you make any changes, please make sure to exit the script by selecting the "0 - Save and quit script" option in the menu.  Changes will NOT be effective if you press Ctrl+C to quit the script.
+* To uninstall the script and the Traffic Server, please run the following command in SSH.
+```
+wget https://raw.githubusercontent.com/Har-Kuun/OneClickCDN/master/uninstall.sh && sudo bash uninstall.sh
+```
 
 ## Contact me
 You can open an issue here if there is any problem/bug when you use it, or would like a new feature to be implemented.
