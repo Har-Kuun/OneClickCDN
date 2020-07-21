@@ -108,7 +108,39 @@ function check_TS
 
 
 function install_TS
+# {
+	# echo "Starting Traffic Server installation..."
+	# echo "..."
+	# echo "..."
+	# echo "Removing Nginx and Apache..."
+	# apt-get remove nginx apache -y
+	# echo "Installing depedencies..."
+	# apt-get update && apt-get upgrade -y
+	# apt-get install wget curl tar certbot automake libtool pkg-config libmodule-install-perl gcc g++ libssl-dev tcl-dev libpcre3-dev libcap-dev libhwloc-dev libncurses5-dev libcurl4-openssl-dev flex autotools-dev bison debhelper dh-apparmor gettext intltool-debian libbison-dev libexpat1-dev libfl-dev libsigsegv2 libsqlite3-dev m4 po-debconf tcl8.6-dev zlib1g-dev -y
+	# wget $TS_DOWNLOAD_LINK
+	# tar xjf trafficserver*.bz2
+	# rm trafficserver*.bz2
+	# cd ${current_dir}/trafficserver-*
+	# echo "Start building Traffic Server from source..."
+	# ./configure --enable-experimental-plugins
+	# make
+	# make install
+	# ln -s /usr/local/etc/trafficserver /etc/trafficserver
+	# mkdir /etc/trafficserver/ssl
+	# chown nobody /etc/trafficserver/ssl
+	# chmod 0760 /etc/trafficserver/ssl
+	# cd ${current_dir}
+	# ldconfig
+	# trafficserver start
+	# echo 
+	# echo "Traffic Server successfully installed!"
+	# echo "Domain		Type(CDN/RevProxy)		OriginIP" > /etc/trafficserver/hostsavailable.sun
+# #	echo "trafficserver start" >> /etc/rc.local
+	# run_on_startup
+	# echo 
+# }
 {
+# build trafficserver from from github
 	echo "Starting Traffic Server installation..."
 	echo "..."
 	echo "..."
@@ -116,19 +148,20 @@ function install_TS
 	apt-get remove nginx apache -y
 	echo "Installing depedencies..."
 	apt-get update && apt-get upgrade -y
-	apt-get install wget curl tar certbot automake libtool pkg-config libmodule-install-perl gcc g++ libssl-dev tcl-dev libpcre3-dev libcap-dev libhwloc-dev libncurses5-dev libcurl4-openssl-dev flex autotools-dev bison debhelper dh-apparmor gettext intltool-debian libbison-dev libexpat1-dev libfl-dev libsigsegv2 libsqlite3-dev m4 po-debconf tcl8.6-dev zlib1g-dev -y
-	wget $TS_DOWNLOAD_LINK
-	tar xjf trafficserver*.bz2
-	rm trafficserver*.bz2
-	cd ${current_dir}/trafficserver-*
-	echo "Start building Traffic Server from source..."
-	./configure --enable-experimental-plugins
+	apt-get install autoconf git wget curl tar certbot automake libtool pkg-config libmodule-install-perl gcc g++ libssl-dev tcl-dev libpcre3-dev libcap-dev libhwloc-dev libncurses5-dev libcurl4-openssl-dev flex autotools-dev bison debhelper dh-apparmor gettext intltool-debian libbison-dev libexpat1-dev libfl-dev libsigsegv2 libsqlite3-dev m4 po-debconf tcl8.6-dev zlib1g-dev -y
+	mkdir -p ~/dev
+	cd ~/dev
+	git clone https://github.com/apache/trafficserver.git
+	cd trafficserver
+	autoreconf -if
+	./configure
 	make
-	make install
+	sudo make install
 	ln -s /usr/local/etc/trafficserver /etc/trafficserver
 	mkdir /etc/trafficserver/ssl
 	chown nobody /etc/trafficserver/ssl
 	chmod 0760 /etc/trafficserver/ssl
+	make clean
 	cd ${current_dir}
 	ldconfig
 	trafficserver start
