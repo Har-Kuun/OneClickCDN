@@ -17,12 +17,21 @@ A one-click shell script to set up a CDN node for your websites.
 * Root access, or sudo user
 
 ## How to use
+* Firstly, you need to find a spare VPS with at least 1 IPv4, and install Ubuntu 20.04 LTS 64 bit (recommended) or Debian 10 64 bit OS.
+* Then, please run the following command as a sudo user in SSH.
 ```
 wget https://raw.githubusercontent.com/Har-Kuun/OneClickCDN/master/OneClickCDN.sh && sudo bash OneClickCDN.sh
 ```
+* The script will guide you through the installation and configuration process.  You will also be prompted to add websites.
+* In this process, you will be asked to set up SSL certificate.  You can choose to provide paths to your own SSL files (including private key, certificate, and CA chain certificate if applicable), or generate a free Let's Encrypt SSL certificate (not recommended, because if you have more than 1 CDN node, this will not work).  If you do choose to use the Let's Encrypt function, make sure to point your domain name to your CDN node IP BEFORE setting up the SSL.  You can always set up SSL later by selecting from the main menu.
+* You can run the same script again in SSH in order to bring up the menu.  It will detect your current installation and will skip the installation process.
+```
+sudo bash OneClickCDN.sh
+```
+* If you make any changes, please make sure to exit the script by selecting the "0 - Save and quit script" option in the menu.  Changes will NOT be effective if you press Ctrl+C to quit the script.
 
 ## Contact me
-You can open an issue here if there is any problem/bug when you use it.
+You can open an issue here if there is any problem/bug when you use it, or would like a new feature to be implemented.
 For faster response, you can leave a message on this project webpage https://qing.su/article/oneclick-cdn.html
 
 中文支持请访问 https://qing.su/article/oneclick-cdn.html
