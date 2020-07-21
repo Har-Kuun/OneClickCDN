@@ -183,7 +183,6 @@ CONFIG proxy.config.http.cache.http INT 1
 CONFIG proxy.config.http.cache.ignore_client_cc_max_age INT 1
 CONFIG proxy.config.http.normalize_ae INT 1
 CONFIG proxy.config.http.cache.cache_responses_to_cookies INT 1
-CONFIG proxy.config.http.cache.cache_urls_that_look_dynamic INT 1
 CONFIG proxy.config.http.cache.when_to_revalidate INT 0
 CONFIG proxy.config.http.cache.required_headers INT 2
 CONFIG proxy.config.http.cache.ignore_client_no_cache INT 1
@@ -319,7 +318,16 @@ function config_cache_partitioning
 	done
 	echo "hostname=* volume=1,2,3,4" > /etc/trafficserver/hosting.config
 	echo "Disk cache partitioned."
-       	echo 
+	echo 
+}
+
+function config_cache_dynamic_content
+{
+	echo
+	echo "CONFIG proxy.config.http.cache.cache_urls_that_look_dynamic INT 1" >> /etc/trafficserver/records.config
+	echo "Cache rules updated!"
+	echo "Traffic Server will cache dynamic content."
+	echo 
 }
 
 function config_mapping_reverse_proxy
@@ -677,6 +685,15 @@ function reconfigure_traffic_server
 		config_cache_partitioning
 		rm -f /etc/trafficserver/header_rewrite.config
 		enable_header_rewriter
+		echo "Would you like Traffic Server to cache dynamic content? [Y/N]"
+		read do_cache_dynamic_content
+		if [ "x$do_cache_dynamic_content" = "xY" ] || [ "x$do_cache_dynamic_content" = "xy" ] ; then
+			echo "Updating cache rules..."
+			config_cache_dynamic_content
+		else
+			echo "Traffic Server will not cache dynamic content!"
+			echo 
+		fi
 		echo "Would you like to enable \"Allow-Control-Allow-Origin\" header (CORS)?"
 		echo "Please choose Y if you have no idea what it is. [Y/N]"
 		read do_enable_CORS
@@ -813,6 +830,15 @@ function main
 		config_cache_storage
 		config_cache_partitioning
 		enable_header_rewriter
+		echo "Would you like Traffic Server to cache dynamic content? [Y/N]"
+		read do_cache_dynamic_content
+		if [ "x$do_cache_dynamic_content" = "xY" ] || [ "x$do_cache_dynamic_content" = "xy" ] ; then
+			echo "Updating cache rules..."
+			config_cache_dynamic_content
+		else
+			echo "Traffic Server will not cache dynamic content!"
+			echo 
+		fi
 		echo "Would you like to enable \"Allow-Control-Allow-Origin\" header (CORS)?"
 		echo "Please choose Y if you have no idea what it is. [Y/N]"
 		read do_enable_CORS
