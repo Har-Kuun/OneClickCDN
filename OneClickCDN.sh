@@ -118,7 +118,7 @@ function install_TS
 	apt-get update && apt-get upgrade -y
 	apt-get install wget curl tar certbot automake libtool pkg-config libmodule-install-perl gcc g++ libssl-dev tcl-dev libpcre3-dev libcap-dev libhwloc-dev libncurses5-dev libcurl4-openssl-dev flex autotools-dev bison debhelper dh-apparmor gettext intltool-debian libbison-dev libexpat1-dev libfl-dev libsigsegv2 libsqlite3-dev m4 po-debconf tcl8.6-dev zlib1g-dev -y
 	wget $TS_DOWNLOAD_LINK
-    tar xjf trafficserver*.bz2
+	tar xjf trafficserver*.bz2
 	rm trafficserver*.bz2
 	cd ${current_dir}/trafficserver-*
 	echo "Start building Traffic Server from source..."
@@ -788,7 +788,7 @@ function main
 		echo 
 		echo "Please indicate if you would like to install now: (Y/N)"
 		read install_or_not
-		if [ "x$install_or_not" != "xY" ] ; then
+		if [ "x$install_or_not" != "xY" ] && [ "x$install_or_not" != "xy" ] ; then
 			echo 
 			echo "Aborted!"
 			echo 
@@ -863,11 +863,11 @@ function main
 		read key
 		case $key in 
 			1 ) 		echo 
-						cat /etc/trafficserver/hostsavailable.sun
+					cat /etc/trafficserver/hostsavailable.sun
 						;;
 			2 ) 		clear_all_cache
 						;;
-			3 )			add_cdn
+			3 )		add_cdn
 						;;
 			4 ) 		config_ssl_selection
 						;;
@@ -880,8 +880,8 @@ function main
 			8 ) 		display_license
 						;;
 			73 )		if [ "x$REVERSE_PROXY_MODE_ENABLED" = "xON" ] ; then
-							add_reverse_proxy
-						fi
+						add_reverse_proxy
+					fi
 						;;
 			11 )		change_cdn_ip
 						;;
