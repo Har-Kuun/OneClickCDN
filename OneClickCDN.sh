@@ -28,10 +28,10 @@ REVERSE_PROXY_MODE_ENABLED=OFF
 
 
 
-#By default, this script only works on Ubuntu 20.  It should also work on Debian 10, but only experimentally.
+#By default, this script only works on Ubuntu 20.  It should also work on Debian 10 and CentOS 7/8, but only experimentally.
 #You can disable the OS check below to try to install it in Debian, or other Ubuntu versions.
 #The script will NOT work on CentOS and Fedora.
-#Please do note that if you do choose to use this script on OS other than Ubuntu 20 or Debian 10, you might mess up your OS.  Please keep a backup of your server before installation.
+#Please do note that if you do choose to use this script on OS other than Ubuntu 20, Debian 10, or CentOS 7/8, you might mess up your OS.  Please keep a backup of your server before installation.
 
 OS_CHECK_ENABLED=ON
 
@@ -90,8 +90,28 @@ function check_OS
 				exit 1
 			fi
 		fi
+	elif [ -f /etc/redhat-release ] ; then
+		cat /etc/redhat-release | grep " 8." >/dev/null
+		if [ $? = 0 ] ; then
+			OS=CENTOS8
+			echo "Support of CentOS 8 is experimental.  Please report bugs."
+			echo "Please try disabling selinux or firewalld if you cannot visit your website."
+			echo 
+		else
+			cat /etc/redhat-release | grep " 7." >/dev/null
+			if [ $? = 0 ] ; then
+				OS=CENTOS7
+				echo "Support of CentOS 7 is experimental.  Please report bugs."
+				echo "Please try disabling selinux or firewalld if you cannot visit your website."
+				echo 
+			else
+				echo "Sorry, this script only supports Ubuntu 20, Debian 10, and CentOS 7/8."
+				echo
+				exit 1
+			fi
+		fi
 	else
-		echo "Sorry, this script only supports Ubuntu 20 and Debian 10."
+		echo "Sorry, this script only supports Ubuntu 20, Debian 10, and CentOS 7/8."
 		echo 
 		exit 1
 	fi
@@ -119,7 +139,7 @@ function install_TS
 	apt-get install wget curl tar certbot automake libtool pkg-config libmodule-install-perl gcc g++ libssl-dev tcl-dev libpcre3-dev libcap-dev libhwloc-dev libncurses5-dev libcurl4-openssl-dev flex autotools-dev bison debhelper dh-apparmor gettext intltool-debian libbison-dev libexpat1-dev libfl-dev libsigsegv2 libsqlite3-dev m4 po-debconf tcl8.6-dev zlib1g-dev -y
 	wget $TS_DOWNLOAD_LINK
 	tar xjf trafficserver*.bz2
-	rm trafficserver*.bz2
+	rm -f trafficserver*.bz2
 	cd ${current_dir}/trafficserver-*
 	echo "Start building Traffic Server from source..."
 	./configure --enable-experimental-plugins
@@ -136,6 +156,52 @@ function install_TS
 	echo "Traffic Server successfully installed!"
 	echo "Domain		Type(CDN/RevProxy)		OriginIP" > /etc/trafficserver/hostsavailable.sun
 #	echo "trafficserver start" >> /etc/rc.local
+	run_on_startup
+	echo 
+}
+
+function install_TS_CentOS
+{
+	echo "Starting Traffic Server installation..."
+	echo "..."
+	echo "..."
+	echo "Removing Nginx and Apache..."
+	yum remove httpd nginx -y
+	echo "Installing depedencies..."
+	yum update -y
+	if [ "x$OS" = "xCENTOS7" ] ; then
+		yum install centos-release-scl -y
+		yum install devtoolset-8 -y
+		scl enable devtoolset-8
+		yum install wget curl tar openssl-devel pcre-devel tcl-devel expat-devel libcap-devel hwloc ncurses-devel libcurl-devel pcre-devel tcl-devel expat-devel openssl-devel perl-ExtUtils-MakeMaker bzip2 -y
+		yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -y
+		yum install certbot -y
+	else
+		dnf -y group install "Development Tools"
+		dnf -y install wget curl tar openssl-devel pcre-devel tcl-devel expat-devel libcap-devel hwloc ncurses-devel bzip2 libcurl-devel pcre-devel tcl-devel expat-devel openssl-devel perl-ExtUtils-MakeMaker
+		yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+		dnf -y install certbot
+		dnf config-manager --set-enabled PowerTools
+		
+	fi
+	wget $TS_DOWNLOAD_LINK
+	tar xjf trafficserver*.bz2
+	rm -f trafficserver*.bz2
+	cd ${current_dir}/trafficserver-*
+	echo "Start building Traffic Server from source..."
+	./configure --enable-experimental-plugins
+	make
+	make install
+	ln -s /usr/local/etc/trafficserver /etc/trafficserver
+	mkdir /etc/trafficserver/ssl
+	chown nobody /etc/trafficserver/ssl
+	chmod 0760 /etc/trafficserver/ssl
+	cd ${current_dir}
+	ldconfig
+	trafficserver start
+	echo 
+	echo "Traffic Server successfully installed!"
+	echo "Domain		Type(CDN/RevProxy)		OriginIP" > /etc/trafficserver/hostsavailable.sun
 	run_on_startup
 	echo 
 }
@@ -472,6 +538,7 @@ function config_ssl_later
 	echo "No problem!  Please take your time and find your certificates."
 	echo "You can always run this script again and set up SSL certificates for your instances later."
 	echo "Simply choose Option 4 in the main menu."
+	trafficserver restart
 	echo "Thank you for using this script!  Have a nice day!"
 	exit 0
 }
@@ -481,7 +548,7 @@ function display_license
 	echo 
 	echo '*******************************************************************'
 	echo '*       One-click CDN installation script                         *'
-	echo '*       Version 0.0.1                                             *'
+	echo '*       Version 0.0.2                                             *'
 	echo '*       Author: shc (Har-Kuun) https://qing.su                    *'
 	echo '*       https://github.com/Har-Kuun/oneclickCDN                   *'
 	echo '*       Thank you for using this script.  E-mail: hi@qing.su      *'
@@ -811,7 +878,11 @@ function main
 			echo 
 			exit 0
 		fi
-		install_TS
+		if [ "x$OS" = "xCENTOS7" ] || [ "x$OS" = "xCENTOS8" ] ; then
+			install_TS_CentOS
+		else
+			install_TS
+		fi
 		echo 
 		echo "Configuring Traffic Server..."
 		config_main_records
