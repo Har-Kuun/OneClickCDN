@@ -10,7 +10,7 @@ A one-click shell script to set up a CDN node for your websites.
 * So on...
 
 ## System requirement
-* Ubuntu 20.04 LTS 64 bit or Debian 10 64 bit (experimental)
+* Ubuntu 20.04 LTS 64 bit, Debian 10 64 bit (experimental), and CentOS 7/8 64 bit
 * 1 IPv4
 * At least 512 MB RAM for running CDN instance
 * For the very first time, building the program from source requires about 1.5 GB RAM.  You may add SWAP to your VPS for this step.
@@ -44,4 +44,5 @@ Thank you!
 
 ## Update log
 * 07/19/2020        v0.0.1        Script created.
-* 07/20/2020        v0.0.2        Added Debian 10 support; add systemd service.
+* 07/20/2020        v0.0.2        Add Debian 10 support; add systemd service.
+* 07/21/2020        v0.0.3        Add CentOS 7/8 support; add a script to uninstall Traffic Server.
