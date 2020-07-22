@@ -28,10 +28,9 @@ REVERSE_PROXY_MODE_ENABLED=OFF
 
 
 
-#By default, this script only works on Ubuntu 20.  It should also work on Debian 10 and CentOS 7/8, but only experimentally.
-#You can disable the OS check below to try to install it in Debian, or other Ubuntu versions.
-#The script will NOT work on CentOS and Fedora.
-#Please do note that if you do choose to use this script on OS other than Ubuntu 20, Debian 10, or CentOS 7/8, you might mess up your OS.  Please keep a backup of your server before installation.
+#By default, this script only works on Ubuntu 20, Debian 10, and CentOS 7/8.
+#You can disable the OS check switch below and tweak the code yourself to try to install it in other OS versions.
+#Please do note that if you choose to use this script on OS other than Ubuntu 20, Debian 10, or CentOS 7/8, you might mess up your OS.  Please keep a backup of your server before installation.
 
 OS_CHECK_ENABLED=ON
 
@@ -138,13 +137,39 @@ function install_TS
 	apt-get update && apt-get upgrade -y
 	apt-get install wget curl tar certbot automake libtool pkg-config libmodule-install-perl gcc g++ libssl-dev tcl-dev libpcre3-dev libcap-dev libhwloc-dev libncurses5-dev libcurl4-openssl-dev flex autotools-dev bison debhelper dh-apparmor gettext intltool-debian libbison-dev libexpat1-dev libfl-dev libsigsegv2 libsqlite3-dev m4 po-debconf tcl8.6-dev zlib1g-dev -y
 	wget $TS_DOWNLOAD_LINK
-	tar xjf trafficserver*.bz2
-	rm -f trafficserver*.bz2
-	cd ${current_dir}/trafficserver-*
+	tar xjf trafficserver-${TS_VERSION}.tar.bz2
+	rm -f trafficserver-${TS_VERSION}.tar.bz2
+	cd ${current_dir}/trafficserver-${TS_VERSION}
 	echo "Start building Traffic Server from source..."
 	./configure --enable-experimental-plugins
+	if [ -f ${current_dir}/trafficserver-${TS_VERSION}/config.status ] ; then
+		echo "Dependencies met!"
+		echo "Compiling now..."
+		echo
+	else
+		echo 
+		echo "Missing dependencies."
+		echo "Please check log, install required dependencies, and run this script again."
+		echo "Please also consider to report your log here https://github.com/Har-Kuun/OneClickCDN/issues so that I can fix this issue."
+		echo "Thank you!"
+		echo 
+		exit 1
+	fi
 	make
 	make install
+	if [ -f /usr/local/bin/traffic_manager ] ; then
+		echo 
+		echo "Traffic Server successfully installed!"
+		echo
+	else
+		echo
+		echo "Traffic Server installation failed."
+		echo "Please check the above log for reasons."
+		echo "Please also consider to report your log here https://github.com/Har-Kuun/OneClickCDN/issues so that I can fix this issue."
+		echo "Thank you!"
+		echo
+		exit 1
+	fi
 	ln -s /usr/local/etc/trafficserver /etc/trafficserver
 	mkdir /etc/trafficserver/ssl
 	chown nobody /etc/trafficserver/ssl
@@ -181,17 +206,42 @@ function install_TS_CentOS
 		dnf -y install wget curl tar openssl-devel pcre-devel tcl-devel expat-devel libcap-devel hwloc ncurses-devel bzip2 libcurl-devel pcre-devel tcl-devel expat-devel openssl-devel perl-ExtUtils-MakeMaker
 		yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
 		dnf -y install certbot
-		dnf config-manager --set-enabled PowerTools
-		
+		dnf config-manager --set-enabled PowerTools		
 	fi
 	wget $TS_DOWNLOAD_LINK
-	tar xjf trafficserver*.bz2
-	rm -f trafficserver*.bz2
-	cd ${current_dir}/trafficserver-*
+	tar xjf trafficserver-${TS_VERSION}.tar.bz2
+	rm -f trafficserver-${TS_VERSION}.tar.bz2
+	cd ${current_dir}/trafficserver-${TS_VERSION}
 	echo "Start building Traffic Server from source..."
 	./configure --enable-experimental-plugins
+	if [ -f ${current_dir}/trafficserver-${TS_VERSION}/config.status ] ; then
+		echo "Dependencies met!"
+		echo "Compiling now..."
+		echo
+	else
+		echo 
+		echo "Missing dependencies."
+		echo "Please check log, install required dependencies, and run this script again."
+		echo "Please also consider to report your log here https://github.com/Har-Kuun/OneClickCDN/issues so that I can fix this issue."
+		echo "Thank you!"
+		echo 
+		exit 1
+	fi
 	make
 	make install
+	if [ -f /usr/local/bin/traffic_manager ] ; then
+		echo 
+		echo "Traffic Server successfully installed!"
+		echo
+	else
+		echo
+		echo "Traffic Server installation failed."
+		echo "Please check the above log for reasons."
+		echo "Please also consider to report your log here https://github.com/Har-Kuun/OneClickCDN/issues so that I can fix this issue."
+		echo "Thank you!"
+		echo
+		exit 1
+	fi
 	ln -s /usr/local/etc/trafficserver /etc/trafficserver
 	mkdir /etc/trafficserver/ssl
 	chown nobody /etc/trafficserver/ssl
@@ -418,7 +468,9 @@ function config_mapping_cdn
 	origin_port=$4
 	echo 
 	echo "Adding mapping rules for ${cdn_hostname}..."
-	echo "redirect http://${cdn_hostname}/ https://${cdn_hostname}/" >> /etc/trafficserver/remap.config
+	if [ "$origin_scheme" = "https" ] ; then
+		echo "redirect http://${cdn_hostname}/ https://${cdn_hostname}/" >> /etc/trafficserver/remap.config
+	fi
 	echo "map https://${cdn_hostname}/ ${origin_scheme}://${origin_ip}:${origin_port}/" >> /etc/trafficserver/remap.config
 	echo "2 rules added."
 	echo 
