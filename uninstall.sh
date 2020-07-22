@@ -47,7 +47,7 @@ function uninstall_ts
 		make distclean
 		cd $current_dir
 		rm -fr trafficserver-${TS_VERSION}
-		rm /etc/systemd/system/trafficserver.service
+		rm -f /etc/systemd/system/trafficserver.service
 		systemctl daemon-reload
 		echo
 		echo "Traffic Server has been uninstalled!"
@@ -64,7 +64,7 @@ function uninstall_ts
 		make distclean
 		cd $current_dir
 		rm -fr trafficserver-${TS_VERSION}
-		rm /etc/systemd/system/trafficserver.service
+		rm -f /etc/systemd/system/trafficserver.service
 		systemctl daemon-reload
 		echo
 		echo "Traffic Server has been uninstalled!"
