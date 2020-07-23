@@ -6,8 +6,8 @@ A one-click shell script to set up a CDN node for your websites.
 * Add website to CDN
 * Install SSL certificates
 * One-click free SSL certificates from Let's Encrypt
-* Manage websites, view stats, purge caches
-* So on...
+* Manage websites, view stats, purge caches...
+* If you ever used Cloudflare, the CDN nodes created using this script will behave just like Cloudflare servers.  They will sit between clients and your origin server, caching content from the origin server, and serving your clients with content.  You can set up multiple CDN nodes by running this script on each node, and then use GeoDNS with round robin/failover to build a CDN cluster.
 
 ## System requirement
 * Ubuntu 20.04 LTS 64 bit, Debian 10 64 bit (experimental), and CentOS 7/8 64 bit
@@ -17,7 +17,7 @@ A one-click shell script to set up a CDN node for your websites.
 * Root access, or sudo user
 
 ## How to use
-* Firstly, you need to find a spare VPS with at least 1 IPv4, and install Ubuntu 20.04 LTS 64 bit (recommended) or Debian 10 64 bit OS.
+* Firstly, you need to find a spare VPS with at least 1 IPv4, and install Ubuntu 20.04 LTS 64 bit (recommended), Debian 10 64 bit, or CentOS 7/8 64 bit OS.
 * Then, please run the following command as a sudo user in SSH.
 ```
 wget https://raw.githubusercontent.com/Har-Kuun/OneClickCDN/master/OneClickCDN.sh && sudo bash OneClickCDN.sh
