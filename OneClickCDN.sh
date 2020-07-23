@@ -630,7 +630,7 @@ function config_ssl_non_le
 		echo "dest_ip=$2 ssl_cert_name=$1.crt ssl_key_name=$1.key" >> /etc/trafficserver/ssl_multicert.config
 	else
 		cp $ca_cert_file /etc/trafficserver/ssl/$1.ca.crt
-		echo "dest_ip=$2 ssl_cert_name=$1.crt ssl_key_name=$1.key ca_name=$1.ca.crt" >> /etc/trafficserver/ssl_multicert.config
+		echo "dest_ip=$2 ssl_cert_name=$1.crt ssl_key_name=$1.key ssl_ca_name=$1.ca.crt" >> /etc/trafficserver/ssl_multicert.config
 	fi
 	echo "SSL certificates successfully configured."
 	echo "Origin IP: $2"
