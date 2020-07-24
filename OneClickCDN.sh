@@ -402,7 +402,7 @@ function config_cache_storage
 		disk_cache_size=
 		echo 
 		echo "Please specify disk cache size."
-		echo "The unit if MB.  Please type an integer only."
+		echo "The unit is MB.  Please type an integer only."
 		echo "The recommended value is at least 2048."
 		echo 
 		read disk_cache_size
