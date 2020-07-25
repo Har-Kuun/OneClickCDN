@@ -198,9 +198,10 @@ function install_TS_CentOS
 		yum install centos-release-scl -y
 		yum install devtoolset-8 -y
 		scl enable devtoolset-8
-		yum install wget curl tar openssl-devel pcre-devel tcl-devel expat-devel libcap-devel hwloc ncurses-devel libcurl-devel pcre-devel tcl-devel expat-devel openssl-devel perl-ExtUtils-MakeMaker bzip2 -y
+		yum install wget curl tar openssl-devel pcre-devel tcl-devel gcc-c++ expat-devel libcap-devel hwloc ncurses-devel libcurl-devel pcre-devel tcl-devel expat-devel openssl-devel perl-ExtUtils-MakeMaker bzip2 -y
 		yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -y
 		yum install certbot -y
+		source /opt/rh/devtoolset-8/enable
 	else
 		dnf -y group install "Development Tools"
 		dnf -y install wget curl tar openssl-devel pcre-devel tcl-devel expat-devel libcap-devel hwloc ncurses-devel bzip2 libcurl-devel pcre-devel tcl-devel expat-devel openssl-devel perl-ExtUtils-MakeMaker
