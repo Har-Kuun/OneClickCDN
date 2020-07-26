@@ -44,6 +44,11 @@ For faster response, you can leave a message on this project webpage https://qin
 Thank you!
 
 ## Update log
-* 07/19/2020        v0.0.1        Script created.
-* 07/20/2020        v0.0.2        Add Debian 10 support; add systemd service.
-* 07/21/2020        v0.0.3        Add CentOS 7/8 support; add a script to uninstall Traffic Server.
+ __Current version: v0.0.4__
+
+|Date|Version|Changes|
+|---|---|---|
+|07/19/2020|v0.0.1|Script created|
+|07/20/2020|v0.0.2|Add Debian 10 support; add systemd service|
+|07/21/2020|v0.0.3|Add CentOS 7/8 support; add a script to uninstall Traffic Server|
+|07/25/2020|v0.0.4|Add function to remove a website; fix bugs; add colored display|
