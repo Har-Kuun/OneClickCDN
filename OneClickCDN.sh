@@ -1,8 +1,8 @@
 #!/bin/bash
 #################################################################
-#    One-click CDN Installation Script v0.0.3                   #
+#    One-click CDN Installation Script v0.0.4                   #
 #    Written by shc (https://qing.su)                           #
-#    Github link: https://github.com/Har-Kuun/oneclickCDN       #
+#    Github link: https://github.com/Har-Kuun/OneClickCDN       #
 #    Contact me: https://t.me/hsun94   E-mail: hi@qing.su       #
 #                                                               #
 #    This script is distributed in the hope that it will be     #
@@ -64,7 +64,7 @@ function check_OS
 			then
 				OS=UBUNTU20
 			else
-				echo "Sorry, this script only supports Ubuntu 20 and Debian 10."
+				say "Sorry, this script only supports Ubuntu 20 and Debian 10." red
 				echo 
 				exit 1
 			fi
@@ -84,7 +84,7 @@ function check_OS
 				echo 
 				exit 1
 			else
-				echo "Sorry, this script only supports Ubuntu 20 and Debian 10."
+				say "Sorry, this script only supports Ubuntu 20 and Debian 10." red
 				echo 
 				exit 1
 			fi
@@ -128,7 +128,7 @@ function check_TS
 
 function install_TS
 {
-	echo "Starting Traffic Server installation..."
+	say @B"Starting Traffic Server installation..." green
 	echo "..."
 	echo "..."
 	echo "Removing Nginx and Apache..."
@@ -143,12 +143,12 @@ function install_TS
 	echo "Start building Traffic Server from source..."
 	./configure --enable-experimental-plugins
 	if [ -f ${current_dir}/trafficserver-${TS_VERSION}/config.status ] ; then
-		echo "Dependencies met!"
-		echo "Compiling now..."
+		say @B"Dependencies met!" green
+		say @B"Compiling now..." green
 		echo
 	else
 		echo 
-		echo "Missing dependencies."
+		say "Missing dependencies." red
 		echo "Please check log, install required dependencies, and run this script again."
 		echo "Please also consider to report your log here https://github.com/Har-Kuun/OneClickCDN/issues so that I can fix this issue."
 		echo "Thank you!"
@@ -159,11 +159,11 @@ function install_TS
 	make install
 	if [ -f /usr/local/bin/traffic_manager ] ; then
 		echo 
-		echo "Traffic Server successfully installed!"
+		say @B"Traffic Server successfully installed!" green
 		echo
 	else
 		echo
-		echo "Traffic Server installation failed."
+		say "Traffic Server installation failed." red
 		echo "Please check the above log for reasons."
 		echo "Please also consider to report your log here https://github.com/Har-Kuun/OneClickCDN/issues so that I can fix this issue."
 		echo "Thank you!"
@@ -178,7 +178,7 @@ function install_TS
 	ldconfig
 	trafficserver start
 	echo 
-	echo "Traffic Server successfully installed!"
+	say @B"Traffic Server successfully started!" green
 	echo "Domain		Type(CDN/RevProxy)		OriginIP" > /etc/trafficserver/hostsavailable.sun
 #	echo "trafficserver start" >> /etc/rc.local
 	run_on_startup
@@ -187,7 +187,7 @@ function install_TS
 
 function install_TS_CentOS
 {
-	echo "Starting Traffic Server installation..."
+	say @B"Starting Traffic Server installation..." green
 	echo "..."
 	echo "..."
 	echo "Removing Nginx and Apache..."
@@ -216,12 +216,12 @@ function install_TS_CentOS
 	echo "Start building Traffic Server from source..."
 	./configure --enable-experimental-plugins
 	if [ -f ${current_dir}/trafficserver-${TS_VERSION}/config.status ] ; then
-		echo "Dependencies met!"
-		echo "Compiling now..."
+		say @B"Dependencies met!" green
+		say @B"Compiling now..." green
 		echo
 	else
 		echo 
-		echo "Missing dependencies."
+		say "Missing dependencies." red
 		echo "Please check log, install required dependencies, and run this script again."
 		echo "Please also consider to report your log here https://github.com/Har-Kuun/OneClickCDN/issues so that I can fix this issue."
 		echo "Thank you!"
@@ -232,11 +232,11 @@ function install_TS_CentOS
 	make install
 	if [ -f /usr/local/bin/traffic_manager ] ; then
 		echo 
-		echo "Traffic Server successfully installed!"
+		say @B"Traffic Server successfully installed!" green
 		echo
 	else
 		echo
-		echo "Traffic Server installation failed."
+		say "Traffic Server installation failed." red
 		echo "Please check the above log for reasons."
 		echo "Please also consider to report your log here https://github.com/Har-Kuun/OneClickCDN/issues so that I can fix this issue."
 		echo "Thank you!"
@@ -251,7 +251,7 @@ function install_TS_CentOS
 	ldconfig
 	trafficserver start
 	echo 
-	echo "Traffic Server successfully installed!"
+	say @B"Traffic Server successfully started!" green
 	echo "Domain		Type(CDN/RevProxy)		OriginIP" > /etc/trafficserver/hostsavailable.sun
 	run_on_startup
 	echo 
@@ -384,7 +384,7 @@ function config_cache_storage
 		read ram_cache_size
 		re='^[0-9]+$'
 		if ! [[ ${ram_cache_size} =~ $re ]] ; then
-			echo "Please type an integer only.";
+			say @B"Please type an integer only." yellow
 		else
 			valid_integer=1
 		fi
@@ -393,7 +393,7 @@ function config_cache_storage
                 ram_cache_size=50
         fi
 	echo 
-	echo "RAM cache size set to ${ram_cache_size}M."
+	say @B"RAM cache size set to ${ram_cache_size}M." green
 	echo 
 	echo "CONFIG proxy.config.cache.ram_cache.size INT ${ram_cache_size}M" >> /etc/trafficserver/records.config
 
@@ -408,19 +408,19 @@ function config_cache_storage
 		echo 
 		read disk_cache_size
 		if ! [[ ${disk_cache_size} =~ $re ]] ; then
-			echo "please tyope an integer only.";
+			say @B"please tyope an integer only." yellow
 		else
 			valid_integer=1
 		fi
 	done
 	if [ $disk_cache_size -gt 256 ] ; then
 		echo 
-		echo "Disk cache size set to ${disk_cache_size}M."
+		say @B"Disk cache size set to ${disk_cache_size}M." green
 		echo 
 		echo "var/trafficserver ${disk_cache_size}M" > /etc/trafficserver/storage.config
 	else
 		echo 
-		echo "Disk cache size set to 256M."
+		say @B"Disk cache size set to 256M." green
 		echo 
 	fi
 }
@@ -434,7 +434,7 @@ function config_cache_partitioning
 		echo "volume=${i} scheme=http size=25%" >> /etc/trafficserver/volume.config
 	done
 	echo "hostname=* volume=1,2,3,4" > /etc/trafficserver/hosting.config
-	echo "Disk cache partitioned."
+	say @B"Disk cache partitioned." green
 	echo 
 }
 
@@ -442,8 +442,8 @@ function config_cache_dynamic_content
 {
 	echo
 	echo "CONFIG proxy.config.http.cache.cache_urls_that_look_dynamic INT 1" >> /etc/trafficserver/records.config
-	echo "Cache rules updated!"
-	echo "Traffic Server will cache dynamic content."
+	say @B"Cache rules updated!" green
+	say @B"Traffic Server will cache dynamic content." green
 	echo 
 }
 
@@ -457,7 +457,7 @@ function config_mapping_reverse_proxy
 	echo "redirect http://${proxy_hostname}/ https://${proxy_hostname}/" >> /etc/trafficserver/remap.config
 	echo "map https://${proxy_hostname}/ ${origin_scheme}://${origin_hostname}/" >> /etc/trafficserver/remap.config
 	echo "reverse_map ${origin_scheme}://${origin_hostname}/ https://${proxy_hostname}/" >> /etc/trafficserver/remap.config
-	echo "3 rules added."
+	say @B"3 rules added." green
 	echo 
 }
 
@@ -473,7 +473,7 @@ function config_mapping_cdn
 		echo "redirect http://${cdn_hostname}/ https://${cdn_hostname}/" >> /etc/trafficserver/remap.config
 	fi
 	echo "map https://${cdn_hostname}/ ${origin_scheme}://${origin_ip}:${origin_port}/" >> /etc/trafficserver/remap.config
-	echo "2 rules added."
+	say @B"2 rules added." green
 	echo 
 }
 
@@ -531,10 +531,13 @@ function add_cdn
 		cdn_port=80
 		config_mapping_cdn $cdn_hostname_add $origin_ip_add http 80
 	fi
+	echo 
 	echo "${cdn_hostname_add}		CDN		${origin_ip_add}:${cdn_port}" >> /etc/trafficserver/hostsavailable.sun
 	echo "Would you like to configure SSL certificates for domain name ${cdn_hostname_add} now?"
+	echo 
 	echo "We can set up SSL with your own certificates, or can issue a free Let's Encrypt SSL certificate for you, if you have already pointed your domain to this server."
 	echo "How would you like to proceed?"
+	echo 
 	echo "1: I know the absolute path to my certificate files (private key, certificate, CA chain (optional))."
 	echo "2: I have pointed my domain name to this server, and I want a free Let's Encrypt certificate."
 	echo "3: I forgot the path to my certificate files, so I need to go back to SSH and find them; or I do not need SSL certificate for this domain."
@@ -547,7 +550,7 @@ function add_cdn
 				;;
 		3 ) 	config_ssl_later
 				;;
-		* )		echo "Error!" 
+		* )		say "Error!" red
 				exit 1
 				;;
 	esac
@@ -558,6 +561,7 @@ function config_ssl_selection
 	# this function is only called from menu option 4.
 	echo "We can set up SSL with your own certificates, or can issue a free Let's Encrypt SSL certificate for you, if you have already pointed your domain to this server."
 	echo "How would you like to proceed?"
+	echo 
 	echo "1: I know the absolute path to my certificate files (private key, certificate, CA chain (optional))."
 	echo "2: I have pointed my domain name to this server, and I want a free Let's Encrypt certificate."
 	echo "3: I forgot the path to my certificate files, so I need to go back to SSH and find them; or I do not need SSL certificate for this domain."
@@ -578,7 +582,7 @@ function config_ssl_selection
 					;;
 			3 ) 	config_ssl_later
 					;;
-			* )		echo "Error!" 
+			* )		say "Error!" red 
 					exit 1
 					;;
 		esac
@@ -601,9 +605,9 @@ function display_license
 	echo 
 	echo '*******************************************************************'
 	echo '*       One-click CDN installation script                         *'
-	echo '*       Version 0.0.3                                             *'
+	echo '*       Version 0.0.4                                             *'
 	echo '*       Author: shc (Har-Kuun) https://qing.su                    *'
-	echo '*       https://github.com/Har-Kuun/oneclickCDN                   *'
+	echo '*       https://github.com/Har-Kuun/OneClickCDN                   *'
 	echo '*       Thank you for using this script.  E-mail: hi@qing.su      *'
 	echo '*******************************************************************'
 }
@@ -623,22 +627,29 @@ function config_ssl_non_le
 		read ca_cert_file
 	fi
 	# $1 is hostname and $2 is IP
+	echo "Configuring SSL certificates for $2..."
 	cp $priv_key_file /etc/trafficserver/ssl/$1.key
 	cp $cert_file /etc/trafficserver/ssl/$1.crt
-	echo "Configuring SSL certificates for $2..."
-	if [ "x${is_chained}" = "xY" ]
-	then
-		echo "dest_ip=$2 ssl_cert_name=$1.crt ssl_key_name=$1.key" >> /etc/trafficserver/ssl_multicert.config
+	if [ -f /etc/trafficserver/ssl/$1.crt ] && [ -f /etc/trafficserver/ssl/$1.key ] ; then
+		if [ "x${is_chained}" = "xY" ] ; then
+			echo "dest_ip=$2 ssl_cert_name=$1.crt ssl_key_name=$1.key" >> /etc/trafficserver/ssl_multicert.config
+		else
+			cp $ca_cert_file /etc/trafficserver/ssl/$1.ca.crt
+			echo "dest_ip=$2 ssl_cert_name=$1.crt ssl_key_name=$1.key ssl_ca_name=$1.ca.crt" >> /etc/trafficserver/ssl_multicert.config
+		fi
+		say @B"SSL certificates successfully configured." green
+		echo "Origin IP: $2"
+		echo "Private key file: /etc/trafficserver/ssl/$1.key"
+		echo "Certificate file: /etc/trafficserver/ssl/$1.crt"
+		if [ "x${is_chained}" != "xY" ] ; then
+			echo "Intermediate certificate: /etc/trafficserver/ssl/$1.ca.crt"
+		fi
+		echo 
 	else
-		cp $ca_cert_file /etc/trafficserver/ssl/$1.ca.crt
-		echo "dest_ip=$2 ssl_cert_name=$1.crt ssl_key_name=$1.key ssl_ca_name=$1.ca.crt" >> /etc/trafficserver/ssl_multicert.config
-	fi
-	echo "SSL certificates successfully configured."
-	echo "Origin IP: $2"
-	echo "Private key file: /etc/trafficserver/ssl/$1.key"
-	echo "Certificate file: /etc/trafficserver/ssl/$1.crt"
-	if [ "x${is_chained}" != "xY" ] ; then
-		echo "Intermediate certificate: /etc/trafficserver/ssl/$1.ca.crt"
+		say "SSL configuration failed!" red
+		echo "Please check the above log."
+		echo 
+		exit 1
 	fi
 	chown -R nobody /etc/trafficserver/ssl/
 	chmod -R 0760 /etc/trafficserver/ssl/
@@ -660,7 +671,19 @@ function config_ssl_le
 	certbot certonly --standalone --agree-tos --email $email_le -d $hostname_le
 	cp /etc/letsencrypt/live/${hostname_le}/fullchain.pem /etc/trafficserver/ssl/${hostname_le}.crt
 	cp /etc/letsencrypt/live/${hostname_le}/privkey.pem /etc/trafficserver/ssl/${hostname_le}.key
-	echo "dest_ip=${origin_ip} ssl_cert_name=${hostname_le}.crt ssl_key_name=${hostname_le}.key" >> /etc/trafficserver/ssl_multicert.config
+	if [ -f /etc/trafficserver/ssl/${hostname_le}.key ] ; then
+		echo "dest_ip=${origin_ip} ssl_cert_name=${hostname_le}.crt ssl_key_name=${hostname_le}.key" >> /etc/trafficserver/ssl_multicert.config
+		say @B"SSL certificates successfully configured." green
+		echo "Origin IP: ${origin_ip}"
+		echo "Private key file: /etc/trafficserver/ssl/${hostname_le}.key"
+		echo "Certificate file: /etc/trafficserver/ssl/${hostname_le}.crt"
+		echo 
+	else
+		say "Let's Encrypt SSL configuration failed!" red
+		echo "Please check the above log."
+		echo
+		exit 1
+	fi
 	chown -R nobody /etc/trafficserver/ssl/
 	chmod -R 0760 /etc/trafficserver/ssl/
 	trafficserver start
@@ -722,7 +745,7 @@ function enable_header_rewriter
 	echo "Setting up header rewriter..."
 	echo "header_rewrite.so /etc/trafficserver/header_rewrite.config" > /etc/trafficserver/plugin.config
 	touch /etc/trafficserver/header_rewrite.config
-	echo "Header rewriter plugin enabled!"
+	say @B"Header rewriter plugin enabled!" green
 	echo 
 }
 
@@ -732,7 +755,7 @@ function enable_CORS
 	echo "Setting up cross-origin resource sharing headers..."
 	echo "rm-header Access-Control-Allow-Origin *" >> /etc/trafficserver/header_rewrite.config
 	echo "add-header Access-Control-Allow-Origin *" >> /etc/trafficserver/header_rewrite.config
-	echo "CORS header added!"
+	say @B"CORS header added!" green
 	echo 
 }
 
@@ -745,7 +768,7 @@ function customize_server_header
 	echo "cond %\{SEND_RESPONSE_HDR_HOOK\} [AND]" >> /etc/trafficserver/header_rewrite.config
 	echo "cond %{HEADER:server} =ATS/${TS_VERSION}" >> /etc/trafficserver/header_rewrite.config
 	echo "set-header server \"${cdn_server_header}\"" >> /etc/trafficserver/header_rewrite.config
-	echo "Server header set!"
+	say @B"Server header set!" green
 	echo 
 }
 
@@ -756,7 +779,7 @@ function clear_all_cache
 	trafficserver stop
 	echo "Purging all cache..."
 	traffic_server -Cclear
-	echo "Cache purged successfully."
+	say @B"Cache purged successfully." green
 	echo "Starting Traffic Server..."
 	trafficserver start
 	echo 
@@ -772,7 +795,7 @@ function change_cdn_ip
 	sed 's/${old_ip}/${new_ip}/g' /etc/trafficserver/hostsavailable.sun
 	sed 's/${old_ip}/${new_ip}/g' /etc/trafficserver/ssl_multicert.config
 	sed 's/${old_ip}/${new_ip}/g' /etc/trafficserver/remap.config
-	echo "IP changed from ${old_ip} to ${new_ip}"
+	say @B"IP changed from ${old_ip} to ${new_ip}" green
 	echo 
 }
 
@@ -782,7 +805,7 @@ function reconfigure_traffic_server
 	echo "Are you sure to reconfigure Traffic Server?"
 	echo "All previous configurations will be cleared."
 	echo "Mapping rules and SSL certificate settings will be kept."
-	echo "Would you like to continue? [Y/N]"
+	say "Would you like to continue? [Y/N]" yellow blue
 	read do_reconfigure_ts
 	if [ "x$do_reconfigure_ts" = "xY" ] ; then
 		echo 
@@ -794,7 +817,7 @@ function reconfigure_traffic_server
 		if [ "x$do_config_cache_rules" = "xY" ] || [ "x$do_config_cache_rules" = "xy" ] ; then
 			echo "Configuring cache rules..."
 			config_cache_rules
-			echo "Cache rules configured successfully."
+			say @B"Cache rules configured successfully." green
 		else
 			echo "You can configure cache rules manually at /etc/trafficserver/cache.config.  Make sure to run \"trafficserver restart\" after changing the cache rules."
 		fi
@@ -811,7 +834,7 @@ function reconfigure_traffic_server
 			echo "Updating cache rules..."
 			config_cache_dynamic_content
 		else
-			echo "Traffic Server will not cache dynamic content!"
+			say @B"Traffic Server will not cache dynamic content!" yellow
 			echo 
 		fi
 		echo "Would you like to enable \"Allow-Control-Allow-Origin\" header (CORS)?"
@@ -820,7 +843,7 @@ function reconfigure_traffic_server
 		if [ "x$do_enable_CORS" = "xY" ] || [ "x$do_enable_CORS" = "xy" ] ; then
 			enable_CORS
 		else
-			echo "CORS not configured."
+			say @B"CORS not configured." yellow
 			echo 
 		fi
 		echo "The \"server\" header can be a short phrase, like \"shc-cdn-server 1.0.0\", or \"Traffic Server 8.0.8\"."
@@ -830,14 +853,14 @@ function reconfigure_traffic_server
 		if [ "x$do_change_server_header" = "xY" ] || [ "x$do_change_server_header" = "xy" ] ; then
 			customize_server_header
 		else
-			echo "Server header tag value not changed."
+			say @B"Server header tag value not changed." yellow
 			echo 
 		fi
-		echo "Configuration successfully finished!"
+		say @B"Configuration successfully finished!" green
 		echo 
 	else
 		echo 
-		echo "Traffic Server not reconfigured."
+		say @B"Traffic Server not reconfigured." yellow
 		echo 
 	fi
 }
@@ -857,11 +880,49 @@ function renew_le_certificate
 	cp -f /etc/letsencrypt/live/${renew_le_domain}/privkey.pem /etc/trafficserver/ssl/${renew_le_domain}.key
 	chown -R nobody /etc/trafficserver/ssl/
 	chmod -R 0760 /etc/trafficserver/ssl/
-	echo "SSL certificate for ${renew_le_domain} successfully renewed."
+	say @B"SSL certificate for ${renew_le_domain} successfully renewed." green
 	echo 
 	echo "Starting Traffic Server..."
 	trafficserver start
 	echo 
+}
+
+function remove_cdn_website
+{
+	echo
+	cat /etc/trafficserver/hostsavailable.sun
+	echo
+	echo "Please specify the domain name of the website that you would like to remove."
+	echo "Do NOT include \"http\" or \"https\"."
+	echo 
+	read website_to_be_deleted
+	echo 
+	echo "You are about to delete website ${website_to_be_deleted} from this CDN server."
+	echo "Please note that all configurations, as well as SSL certificate files associated with this domain name will be removed."
+	say "Are you sure to continue? [Y/N]" yellow blue
+	read ready_to_be_deleted
+	if [ "x$ready_to_be_deleted" = "xY" ] || [ "x$ready_to_be_deleted" = "xy" ] ; then
+		echo 
+		echo "Removing website from server..."
+		delete_line_in_file $website_to_be_deleted /etc/trafficserver/hostsavailable.sun
+		delete_line_in_file $website_to_be_deleted /etc/trafficserver/remap.config
+		delete_line_in_file $website_to_be_deleted /etc/trafficserver/ssl_multicert.config
+		rm -f /etc/trafficserver/ssl/${website_to_be_deleted}.key
+		rm -f /etc/trafficserver/ssl/${website_to_be_deleted}.crt
+		if [ -f /etc/trafficserver/ssl/${website_to_be_deleted}.ca.crt ] ; then
+			rm -f /etc/trafficserver/ssl/${website_to_be_deleted}.ca.crt
+		fi
+		echo 
+		say @B"Website removed!" green
+		echo "Restarting Traffic Server..."
+		echo 
+		trafficserver restart
+		echo 
+	else
+		echo 
+		say @B"Website not removed!" yellow
+		echo 
+	fi
 }
 
 function say_goodbye
@@ -876,6 +937,52 @@ function say_goodbye
 	echo "Bye!  Have a nice day."
 	echo 
 	key=0
+}
+
+function say
+{
+#This function is a colored version of the built-in "echo."
+#https://github.com/Har-Kuun/useful-shell-functions/blob/master/colored-echo.sh
+	echo_content=$1
+	case $2 in
+		black | k ) colorf=0 ;;
+		red | r ) colorf=1 ;;
+		green | g ) colorf=2 ;;
+		yellow | y ) colorf=3 ;;
+		blue | b ) colorf=4 ;;
+		magenta | m ) colorf=5 ;;
+		cyan | c ) colorf=6 ;;
+		white | w ) colorf=7 ;;
+		* ) colorf=N ;;
+	esac
+	case $3 in
+		black | k ) colorb=0 ;;
+		red | r ) colorb=1 ;;
+		green | g ) colorb=2 ;;
+		yellow | y ) colorb=3 ;;
+		blue | b ) colorb=4 ;;
+		magenta | m ) colorb=5 ;;
+		cyan | c ) colorb=6 ;;
+		white | w ) colorb=7 ;;
+		* ) colorb=N ;;
+	esac
+	if [ "x${colorf}" != "xN" ] ; then
+		tput setaf $colorf
+	fi
+	if [ "x${colorb}" != "xN" ] ; then
+		tput setab $colorb
+	fi
+	printf "${echo_content}" | sed -e "s/@B/$(tput bold)/g"
+	tput sgr 0
+	printf "\n"
+}
+
+function delete_line_in_file
+{
+	delete_pattern=$1
+	delete_file=$2
+	grep -v $delete_pattern $delete_file > temp
+	mv temp $delete_file
 }
 
 function run_on_startup
@@ -912,22 +1019,23 @@ function main
 		check_OS
 	fi
 	echo 
-	echo "Your OS is $OS"
+	say @B"Your OS is $OS" green
 	echo 
 	echo "Checking Traffic Server installation..."
 	check_TS
 	if [ $TS_INSTALLED = 0 ] ; then
 		echo 
-		echo "Traffic Server not installed.  Would you like to install it now?"
+		say @B"Traffic Server not installed.  Would you like to install it now?" yellow
+		echo 
 		echo "Depending on your server specs, you may or may not need to add some SWAP before you proceed."
 		echo "This script needs 1500 MB of RAM for the first time to build from source.  It runs perfectly on a 512 MB VPS once it finishes the installation."
 		echo "If you think you don't have enough RAM now, please quit, add more SWAP, and run this script again."
 		echo 
-		echo "Please indicate if you would like to install now: (Y/N)"
+		say "Please indicate if you would like to install now: (Y/N)" yellow blue
 		read install_or_not
 		if [ "x$install_or_not" != "xY" ] && [ "x$install_or_not" != "xy" ] ; then
 			echo 
-			echo "Aborted!"
+			say "Aborted!" red
 			echo 
 			exit 0
 		fi
@@ -945,7 +1053,7 @@ function main
 		if [ "x$do_config_cache_rules" = "xY" ] || [ "x$do_config_cache_rules" = "xy" ] ; then
 			echo "Configuring cache rules..."
 			config_cache_rules
-			echo "Cache rules configured successfully."
+			say @B"Cache rules configured successfully." green
 		else
 			echo "You can configure cache rules manually at /etc/trafficserver/cache.config.  Make sure to run \"trafficserver restart\" after changing the cache rules."
 		fi
@@ -960,7 +1068,7 @@ function main
 			echo "Updating cache rules..."
 			config_cache_dynamic_content
 		else
-			echo "Traffic Server will not cache dynamic content!"
+			say @B"Traffic Server will not cache dynamic content!" yellow
 			echo 
 		fi
 		echo "Would you like to enable \"Allow-Control-Allow-Origin\" header (CORS)?"
@@ -969,7 +1077,7 @@ function main
 		if [ "x$do_enable_CORS" = "xY" ] || [ "x$do_enable_CORS" = "xy" ] ; then
 			enable_CORS
 		else
-			echo "CORS not configured."
+			say @B"CORS not configured." yellow
 			echo 
 		fi
 		echo "The \"server\" header can be a short phrase, like \"shc-cdn-server 1.0.0\", or \"Traffic Server 8.0.8\"."
@@ -979,15 +1087,15 @@ function main
 		if [ "x$do_change_server_header" = "xY" ] || [ "x$do_change_server_header" = "xy" ] ; then
 			customize_server_header
 		else
-			echo "Server header tag value not changed."
+			say @B"Server header tag value not changed." yellow
 			echo 
 		fi
-		echo "Configuration successfully finished!"
+		say @B"Configuration successfully finished!" green
 		echo "Please proceed to the next step and add your first CDN website."
 		echo 
 	else
 		echo 
-		echo "Traffic Server installed and running!"
+		say @B"Traffic Server installed and running!" green
 		echo 
 	fi
 	key=1
@@ -1003,21 +1111,22 @@ function main
 		echo "7 - List useful commands."
 		echo "8 - Display author information."
 		echo "11 - Change IP address of a website."
-		echo "12 - Reconfigure Traffic Server."
-		echo "13 - Renew Let's Encrypt certificates."
+		echo "12 - Remove a CDN website."
+		echo "13 - Reconfigure Traffic Server."
+		echo "14 - Renew Let's Encrypt certificates."
 	#	if [ "x$REVERSE_PROXY_MODE_ENABLED" = "xON" ] ; then
 	#		echo "73 - Add a reverse proxy website (Experimental only)."
 	#	fi
 		echo "0 - Save all changes and quit this script."
-		echo "Please select 1/2/3/4/5/6/7/8/11/12/13/0: "
+		echo "Please select 1/2/3/4/5/6/7/8/11/12/13/14/0: "
 		read key
 		case $key in 
 			1 ) 		echo 
-					cat /etc/trafficserver/hostsavailable.sun
+						cat /etc/trafficserver/hostsavailable.sun
 						;;
 			2 ) 		clear_all_cache
 						;;
-			3 )		add_cdn
+			3 )			add_cdn
 						;;
 			4 ) 		config_ssl_selection
 						;;
@@ -1030,14 +1139,16 @@ function main
 			8 ) 		display_license
 						;;
 			73 )		if [ "x$REVERSE_PROXY_MODE_ENABLED" = "xON" ] ; then
-						add_reverse_proxy
-					fi
+							add_reverse_proxy
+						fi
 						;;
 			11 )		change_cdn_ip
 						;;
-			12 )		reconfigure_traffic_server
+			12 )		remove_cdn_website
 						;;
-			13 )		renew_le_certificate
+			13 )		reconfigure_traffic_server
+						;;
+			14 )		renew_le_certificate
 						;;
 			0 ) 		say_goodbye
 						;;
