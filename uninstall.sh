@@ -1,8 +1,8 @@
 #!/bin/bash
 #################################################################
-#    One-click CDN Installation Script v0.0.2                   #
+#    One-click CDN Installation Script v0.0.4                   #
 #    Written by shc (https://qing.su)                           #
-#    Github link: https://github.com/Har-Kuun/oneclickCDN       #
+#    Github link: https://github.com/Har-Kuun/OneClickCDN       #
 #    Contact me: https://t.me/hsun94   E-mail: hi@qing.su       #
 #                                                               #
 #    This script is distributed in the hope that it will be     #
@@ -31,11 +31,49 @@ function display_license
 	echo 
 	echo '*******************************************************************'
 	echo '*       One-click CDN installation script                         *'
-	echo '*       Version 0.0.1                                             *'
+	echo '*       Version 0.0.4                                             *'
 	echo '*       Author: shc (Har-Kuun) https://qing.su                    *'
-	echo '*       https://github.com/Har-Kuun/oneclickCDN                   *'
+	echo '*       https://github.com/Har-Kuun/OneClickCDN                   *'
 	echo '*       Thank you for using this script.  E-mail: hi@qing.su      *'
 	echo '*******************************************************************'
+}
+
+function say
+{
+#This function is a colored version of the built-in "echo."
+#https://github.com/Har-Kuun/useful-shell-functions/blob/master/colored-echo.sh
+	echo_content=$1
+	case $2 in
+		black | k ) colorf=0 ;;
+		red | r ) colorf=1 ;;
+		green | g ) colorf=2 ;;
+		yellow | y ) colorf=3 ;;
+		blue | b ) colorf=4 ;;
+		magenta | m ) colorf=5 ;;
+		cyan | c ) colorf=6 ;;
+		white | w ) colorf=7 ;;
+		* ) colorf=N ;;
+	esac
+	case $3 in
+		black | k ) colorb=0 ;;
+		red | r ) colorb=1 ;;
+		green | g ) colorb=2 ;;
+		yellow | y ) colorb=3 ;;
+		blue | b ) colorb=4 ;;
+		magenta | m ) colorb=5 ;;
+		cyan | c ) colorb=6 ;;
+		white | w ) colorb=7 ;;
+		* ) colorb=N ;;
+	esac
+	if [ "x${colorf}" != "xN" ] ; then
+		tput setaf $colorf
+	fi
+	if [ "x${colorb}" != "xN" ] ; then
+		tput setab $colorb
+	fi
+	printf "${echo_content}" | sed -e "s/@B/$(tput bold)/g"
+	tput sgr 0
+	printf "\n"
 }
 
 function uninstall_ts
@@ -43,50 +81,45 @@ function uninstall_ts
 	current_dir=$(pwd)
 	if [ -f ${current_dir}/trafficserver-${TS_VERSION}/configure ] ; then
 		cd ${current_dir}/trafficserver-${TS_VERSION}/
-		make uninstall
-		make distclean
-		cd $current_dir
-		rm -fr trafficserver-${TS_VERSION}
-		rm -f /etc/systemd/system/trafficserver.service
-		systemctl daemon-reload
-		echo
-		echo "Traffic Server has been uninstalled!"
-		echo "Thank you for using this script!"
-		echo "Have a nice day!"
-		echo 
 	else
 		wget $TS_DOWNLOAD_LINK
 		tar xjf trafficserver-${TS_VERSION}.tar.bz2
 		rm trafficserver-${TS_VERSION}.tar.bz2
 		cd ${current_dir}/trafficserver-${TS_VERSION}
 		./configure
+	fi
 		make uninstall
 		make distclean
 		cd $current_dir
 		rm -fr trafficserver-${TS_VERSION}
 		rm -f /etc/systemd/system/trafficserver.service
+		rm -fr /etc/trafficserver
 		systemctl daemon-reload
 		echo
-		echo "Traffic Server has been uninstalled!"
+		say @B"Traffic Server has been uninstalled!" green
 		echo "Thank you for using this script!"
 		echo "Have a nice day!"
 		echo 
-	fi
 }
 
 function main
 {
 	display_license
 	echo 
+	if [ ! -f /usr/local/bin/trafficserver ] ; then
+		say @B"Traffic server is NOT installed." red
+		echo 
+		exit 1
+	fi
 	echo "You are about to uninstall Traffic Server CDN."
 	echo "This will remove all related configurations as well."
-	echo "Please type UNINSTALL to continue.  Type anything else to cancel the uninstallation."
+	say "Please type UNINSTALL to continue.\nType anything else to cancel the uninstallation." yellow blue
 	read do_uninstall
 	if [ "x$do_uninstall" = "xUNINSTALL" ] ; then
 		uninstall_ts
 	else
 		echo 
-		echo "Traffic Server not uninstalled."
+		say @B"Traffic Server not uninstalled." blue
 		echo "Have a nice day!"
 		echo
 	fi
