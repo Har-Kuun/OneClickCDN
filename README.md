@@ -10,7 +10,7 @@ A one-click shell script to set up a CDN node for your websites.
 * If you ever used Cloudflare, the CDN nodes created using this script will behave just like Cloudflare servers.  They will sit between clients and your origin server, caching content from the origin server, and serving your clients with content.  You can set up multiple CDN nodes by running this script on each node, and then use GeoDNS with round robin/failover to build a CDN cluster.
 
 ## System requirement
-* A __freshly installed__ server, with Ubuntu 20.04 LTS 64 bit, Debian 10 64 bit (experimental), or CentOS 7/8 64 bit system
+* A __freshly installed__ server, with Ubuntu 20.04 LTS 64 bit, Debian 10 64 bit, or CentOS 7/8 64 bit system
 * __Do NOT install any web server programs (e.g., Apache, Nginx, LiteSpeed, Caddy).  Do NOT install LAMP or LEMP stack.  Do NOT install any admin panels (e.g., cPanel, DirectAdmin, BTcn, VestaCP).  They are NOT compatible with this script.__
 * 1 IPv4
 * At least 512 MB RAM for running CDN instance
