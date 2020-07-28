@@ -1289,14 +1289,15 @@ function main
 		fi
 		say @B"Configuration successfully finished!" green
 		echo "Please proceed to the next step and add your first CDN website."
+		restart_switch=1
 		echo 
 	else
 		echo 
 		say @B"Traffic Server installed and running!" green
+		restart_switch=0
 		echo 
 	fi
 	key=1
-	restart_switch=0
 	while [ $key != 0 ] ; do
 		echo 
 		say @B"How can I help you today?" cyan
