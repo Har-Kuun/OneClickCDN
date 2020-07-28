@@ -1030,7 +1030,7 @@ function reconfigure_traffic_server
 			say @B"Traffic Server will not cache dynamic content!" yellow
 			echo 
 		fi
-		echo "Would you like to enable \"Allow-Control-Allow-Origin\" header (CORS)?"
+		echo "Would you like to enable \"Access-Control-Allow-Origin\" header (CORS)?"
 		echo "Please choose Y if you have no idea what it is. [Y/N]"
 		read do_enable_CORS
 		if [ "x$do_enable_CORS" = "xY" ] || [ "x$do_enable_CORS" = "xy" ] ; then
@@ -1268,7 +1268,7 @@ function main
 			say @B"Traffic Server will not cache dynamic content!" yellow
 			echo 
 		fi
-		echo "Would you like to enable \"Allow-Control-Allow-Origin\" header (CORS)?"
+		echo "Would you like to enable \"Access-Control-Allow-Origin\" header (CORS)?"
 		echo "Please choose Y if you have no idea what it is. [Y/N]"
 		read do_enable_CORS
 		if [ "x$do_enable_CORS" = "xY" ] || [ "x$do_enable_CORS" = "xy" ] ; then
