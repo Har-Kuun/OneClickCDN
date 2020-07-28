@@ -792,9 +792,9 @@ function change_cdn_ip
 	read old_ip
 	echo "OK.  Then tell me your new Origin server IP.  No domain name required."
 	read new_ip
-	sed 's/${old_ip}/${new_ip}/g' /etc/trafficserver/hostsavailable.sun
-	sed 's/${old_ip}/${new_ip}/g' /etc/trafficserver/ssl_multicert.config
-	sed 's/${old_ip}/${new_ip}/g' /etc/trafficserver/remap.config
+	sed -i "s/$old_ip/$new_ip/g" /etc/trafficserver/hostsavailable.sun
+	sed -i "s/$old_ip/$new_ip/g" /etc/trafficserver/ssl_multicert.config
+	sed -i "s/$old_ip/$new_ip/g" /etc/trafficserver/remap.config
 	say @B"IP changed from ${old_ip} to ${new_ip}" green
 	echo 
 }
