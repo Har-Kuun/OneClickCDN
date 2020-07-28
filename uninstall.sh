@@ -94,6 +94,7 @@ function uninstall_ts
 		rm -fr trafficserver-${TS_VERSION}
 		rm -f /etc/systemd/system/trafficserver.service
 		rm -fr /etc/trafficserver
+		rm -fr /usr/local/etc/trafficserver
 		systemctl daemon-reload
 		echo
 		say @B"Traffic Server has been uninstalled!" green
