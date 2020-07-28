@@ -1,6 +1,6 @@
 #!/bin/bash
 #################################################################
-#    One-click CDN Installation Script v0.0.4                   #
+#    One-click CDN Installation Script v0.0.5                   #
 #    Written by shc (https://qing.su)                           #
 #    Github link: https://github.com/Har-Kuun/OneClickCDN       #
 #    Contact me: https://t.me/hsun94   E-mail: hi@qing.su       #
@@ -408,7 +408,7 @@ function config_cache_storage
 		echo 
 		read disk_cache_size
 		if ! [[ ${disk_cache_size} =~ $re ]] ; then
-			say @B"please tyope an integer only." yellow
+			say @B"please type an integer only." yellow
 		else
 			valid_integer=1
 		fi
@@ -605,7 +605,7 @@ function display_license
 	echo 
 	echo '*******************************************************************'
 	echo '*       One-click CDN installation script                         *'
-	echo '*       Version 0.0.4                                             *'
+	echo '*       Version 0.0.5                                             *'
 	echo '*       Author: shc (Har-Kuun) https://qing.su                    *'
 	echo '*       https://github.com/Har-Kuun/OneClickCDN                   *'
 	echo '*       Thank you for using this script.  E-mail: hi@qing.su      *'
@@ -667,7 +667,8 @@ function config_ssl_le
 	echo "Stopping trafficserver..."
 	echo "Please input your e-mail address: "
 	read email_le
-	trafficserver stop 
+	trafficserver stop
+	systemctl stop trafficserver
 	certbot certonly --standalone --agree-tos --email $email_le -d $hostname_le
 	cp /etc/letsencrypt/live/${hostname_le}/fullchain.pem /etc/trafficserver/ssl/${hostname_le}.crt
 	cp /etc/letsencrypt/live/${hostname_le}/privkey.pem /etc/trafficserver/ssl/${hostname_le}.key
@@ -686,6 +687,7 @@ function config_ssl_le
 	fi
 	chown -R nobody /etc/trafficserver/ssl/
 	chmod -R 0760 /etc/trafficserver/ssl/
+	systemctl start trafficserver
 	trafficserver start
 	echo 
 }
@@ -707,7 +709,7 @@ function display_config_locations
 	echo "Do not forget to restart Traffic Server after modifying config files."
 	echo "Simply run: \"trafficserver restart\""
 	echo "Thank you.  Press return key to continue."
-	read cache_all_variable
+	read catch_all_variable
 	echo 
 }
 
@@ -736,7 +738,7 @@ function display_useful_commands
 	echo "You can always run this script again to add a CDN website, configure SSL certificates, check stats, etc."
 	echo 
 	echo "Press return key to continue."
-	read cache_all_variable
+	read catch_all_variable
 }
 
 function enable_header_rewriter
@@ -782,6 +784,197 @@ function clear_all_cache
 	say @B"Cache purged successfully." green
 	echo "Starting Traffic Server..."
 	trafficserver start
+	echo 
+}
+
+function purge_single_object
+{
+	echo 
+	echo "Please input the URL to the object that you'd like to purge from cache."
+	say @B"Please INCLUDE \"http://\" or \"https://\"." yellow
+	echo 
+	read purge_object_url
+	read purge_object_domain_name <<< $(echo "$purge_object_url" | awk -F/ '{print $3}')
+	read purge_object_domain_name_protocol <<< $(echo "$purge_object_url" | awk -F: '{print $1}')
+	echo 
+	cat /etc/trafficserver/hostsavailable.sun | grep $purge_object_domain_name >/dev/null
+	if [ $? = 0 ] ; then
+		if [ "x$purge_object_domain_name_protocol" = "xhttp" ] ; then
+			purge_object_result=$(curl -vX PURGE --resolve ${purge_object_domain_name}:80:127.0.0.1 ${purge_object_url} 2>&1 | grep " 200")
+		else
+			purge_object_result=$(curl -vX PURGE --resolve ${purge_object_domain_name}:443:127.0.0.1 ${purge_object_url} 2>&1 | grep " 200")
+		fi
+		if [ -n "$purge_object_result" ] ; then
+			say @B"Object ${purge_object_url} successfully purged from cache!" green
+		else
+			say "Purging ${purge_object_url} failed." red
+			say "Object not exist or already purged from cache." red
+		fi
+	else
+		say "Error!" red
+		say "Domain name $purge_object_domain_name does not exist on this server." red
+	fi
+	echo "Press enter to return to the main menu."
+	read catch_all_variable
+	echo 
+}
+
+function purge_list_of_objects
+{
+	echo 
+	echo "You are about to purge a list of objects from cache."
+	say @B"Please specify the absolute path to the file containing the URL of objects." yellow
+	echo "One URL per line. Please include \"http://\" or \"https://\"."
+	read purge_object_list_file
+	echo 
+	if [ -f $purge_object_list_file ] ; then
+		purge_object_list_result_file="${purge_object_list_file}_result"
+		printf "%-10s   %-12s   %s\n" "Type" "Status" "URL" > $purge_object_list_result_file
+		while read line; do 
+			if [ "x$line" = "x" ] ; then
+				continue
+			fi		
+			read purge_object_domain_name <<< $(echo "$line" | awk -F/ '{print $3}')
+			read purge_object_domain_name_protocol <<< $(echo "$line" | awk -F: '{print $1}')
+			cat /etc/trafficserver/hostsavailable.sun | grep $purge_object_domain_name >/dev/null
+			if [ $? = 0 ] ; then
+				if [ "x$purge_object_domain_name_protocol" = "xhttp" ] ; then
+					purge_object_result=$(curl -vX PURGE --resolve ${purge_object_domain_name}:80:127.0.0.1 ${line} 2>&1 | grep " 200")
+				else
+					purge_object_result=$(curl -vX PURGE --resolve ${purge_object_domain_name}:443:127.0.0.1 ${line} 2>&1 | grep " 200")
+				fi
+				if [ -n "$purge_object_result" ] ; then
+					say @B"PURGE        SUCCESS        ${line}" green
+					say @B"PURGE        SUCCESS        ${line}" green >> $purge_object_list_result_file
+				else
+					say "PURGE        FAILURE        ${line}" red
+					say "PURGE        FAILURE        ${line}" red >> $purge_object_list_result_file
+				fi
+			else
+				say "PURGE        WRONG DOMAIN   ${line}" red
+				say "PURGE        WRONG DOMAIN   ${line}" red >> $purge_object_list_result_file
+			fi
+		done < $purge_object_list_file
+		say @B"Completed!" green
+		say @B"Purging results have been saved to ${purge_object_list_result_file}." green
+		say @B"You can use \"cat ${purge_object_list_result_file}\" to display the result file." green
+	else
+		say "The file you specified does not exist." red
+		say "Please check." red
+	fi
+	echo "Press enter to return to the main menu."
+	read catch_all_variable
+	echo 
+}
+	
+function push_single_object
+{
+	echo 
+	echo "Please input the URL to the object that you'd like to push into cache."
+	say @B"Please INCLUDE \"http://\" or \"https://\"." yellow
+	echo 
+	read push_object_url
+	read push_object_domain_name <<< $(echo "$push_object_url" | awk -F/ '{print $3}')
+	echo 
+	cat /etc/trafficserver/hostsavailable.sun | grep $push_object_domain_name >/dev/null
+	if [ $? = 0 ] ; then
+		curl -s -i -o temp "$push_object_url"
+		cat temp | grep " 200" >/dev/null
+		if [ $? = 0 ] ; then
+			curl -s -o /dev/null -X PUSH --data-binary temp "$push_object_url"
+			say @B"Object $push_object_url successfully pushed into cache!" green
+			rm -f temp
+		else
+			say "Pushing $push_object_url failed." red
+			say @B"The requested URL cannot be fetched from the Origin server." red
+			rm -f temp
+		fi
+	else
+		say "Error!" red
+		say "Domain name $push_object_domain_name does not exist on this server." red
+	fi
+	echo "Press enter to return to the main menu."
+	read catch_all_variable
+	echo 
+}
+
+function push_list_of_objects
+{
+	echo 
+	echo "You are about to push a list of objects into cache."
+	say @B"Please specify the absolute path to the file containing the URL of objects." yellow
+	echo "One URL per line. Please include \"http://\" or \"https://\"."
+	read push_object_list_file
+	echo 
+	if [ -f $push_object_list_file ] ; then
+		push_object_list_result_file="${push_object_list_file}_result"
+		printf "%-10s  %-12s   %s\n" "Type" "Status" "URL" > $push_object_list_result_file
+		while read line; do 
+			if [ "x$line" = "x" ] ; then
+				continue
+			fi
+			read push_object_domain_name <<< $(echo "$line" | awk -F/ '{print $3}')
+			cat /etc/trafficserver/hostsavailable.sun | grep $push_object_domain_name >/dev/null
+			if [ $? = 0 ] ; then
+				curl -s -i -o temp "$line"
+				cat temp | grep " 200" >/dev/null
+				if [ $? = 0 ] ; then
+					curl -s -o /dev/null -X PUSH --data-binary temp "$line"
+					say @B"PUSH        SUCCESS        ${line}" green
+					say @B"PUSH        SUCCESS        ${line}" green >> $push_object_list_result_file
+					rm -f temp
+				else
+					say "PUSH        FAILURE        ${line}" red
+					say "PUSH        FAILURE        ${line}" red >> $push_object_list_result_file
+					rm -f temp
+				fi
+			else
+				say "PUSH        WRONG DOMAIN   ${line}" red
+				say "PUSH        WRONG DOMAIN   ${line}" red >> $push_object_list_result_file
+			fi
+		done < $push_object_list_file
+		say @B"Completed!" green
+		say @B"Pushing results have been saved to ${push_object_list_result_file}." green
+		say @B"You can use \"cat ${push_object_list_result_file}\" to display the result file." green
+	else
+		say "The file you specified does not exist." red
+		say "Please check." red
+	fi
+	echo "Press enter to return to the main menu."
+	read catch_all_variable
+	echo 
+}
+
+function advanced_cache_control
+{
+	echo 
+	echo "This submenu allows you to add/remove objects to/from cache."
+	while [ $key != 0 ] ; do
+		echo 
+		say @B"Advanced cache control." cyan
+		echo "1 - Purge all cache."
+		echo "2 - Remove a single object from cache."
+		echo "3 - Remove a list of objects from cache."
+#		echo "4 - Push a single object into cache. (experimental)"
+#		echo "5 - Push a list of objects into cache. (experimental)"
+		echo "0 - Return to main menu."
+		echo "Please select 1/2/3/4/5/0: "
+		read cache_menu_key
+		case $cache_menu_key in 
+			1 ) 		clear_all_cache
+						;;
+			2 ) 		purge_single_object
+						;;
+			3 )			purge_list_of_objects
+						;;
+			4 ) 		push_single_object
+						;;
+			5 ) 		push_list_of_objects
+						;;
+			0 ) 		break
+						;;
+		esac
+	done
 	echo 
 }
 
@@ -871,7 +1064,8 @@ function renew_le_certificate
 	echo "What is the domain name that you wish to renew Let's Encrypt certificate?"
 	read renew_le_domain
 	echo "OK.  Stopping Traffic Server..."
-	trafficserver stop 
+	trafficserver stop
+	systemctl stop trafficserver
 	echo 
 	echo "Renewing SSL certificate for ${renew_le_domain}..."
 	echo 
@@ -883,6 +1077,7 @@ function renew_le_certificate
 	say @B"SSL certificate for ${renew_le_domain} successfully renewed." green
 	echo 
 	echo "Starting Traffic Server..."
+	systemctl start trafficserver
 	trafficserver start
 	echo 
 }
@@ -928,8 +1123,10 @@ function remove_cdn_website
 function say_goodbye
 {
 	echo 
-	echo "Restarting Traffic Server now..."
-	trafficserver restart
+	if [ $restart_switch = 1 ] ; then
+		echo "Restarting Traffic Server now..."
+		trafficserver restart
+	fi
 	echo 
 	echo "Thank you for using this script written by https://qing.su"
 	echo "You can always run this script again to add a CDN website, configure SSL certificates, list current websites, check stats, etc."
@@ -1099,11 +1296,13 @@ function main
 		echo 
 	fi
 	key=1
+	restart_switch=0
 	while [ $key != 0 ] ; do
 		echo 
-		echo "How can I help you today?"
+		say @B"How can I help you today?" cyan
+		echo 
 		echo "1 - List all current CDN websites."
-		echo "2 - Purge all cache."
+		echo "2 - Advanced cache control."
 		echo "3 - Add a CDN website."
 		echo "4 - Configure SSL for a website."
 		echo "5 - Locate configuration and log files."
@@ -1114,21 +1313,20 @@ function main
 		echo "12 - Remove a CDN website."
 		echo "13 - Reconfigure Traffic Server."
 		echo "14 - Renew Let's Encrypt certificates."
-	#	if [ "x$REVERSE_PROXY_MODE_ENABLED" = "xON" ] ; then
-	#		echo "73 - Add a reverse proxy website (Experimental only)."
-	#	fi
 		echo "0 - Save all changes and quit this script."
 		echo "Please select 1/2/3/4/5/6/7/8/11/12/13/14/0: "
 		read key
 		case $key in 
 			1 ) 		echo 
-						cat /etc/trafficserver/hostsavailable.sun
+					cat /etc/trafficserver/hostsavailable.sun
 						;;
-			2 ) 		clear_all_cache
+			2 ) 		advanced_cache_control
 						;;
-			3 )			add_cdn
+			3 )		add_cdn
+					restart_switch=1
 						;;
 			4 ) 		config_ssl_selection
+					restart_switch=1
 						;;
 			5 ) 		display_config_locations
 						;;
@@ -1139,14 +1337,18 @@ function main
 			8 ) 		display_license
 						;;
 			73 )		if [ "x$REVERSE_PROXY_MODE_ENABLED" = "xON" ] ; then
-							add_reverse_proxy
-						fi
+						add_reverse_proxy
+					fi
+					restart_switch=1
 						;;
 			11 )		change_cdn_ip
+					restart_switch=1
 						;;
 			12 )		remove_cdn_website
+						restart_switch=1
 						;;
 			13 )		reconfigure_traffic_server
+					restart_switch=1
 						;;
 			14 )		renew_le_certificate
 						;;
