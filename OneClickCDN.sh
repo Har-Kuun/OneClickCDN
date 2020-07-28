@@ -295,7 +295,7 @@ CONFIG proxy.config.http.negative_caching_enabled INT 0
 CONFIG proxy.config.http.negative_caching_lifetime INT 1800
 CONFIG proxy.config.http.insert_client_ip INT 1
 CONFIG proxy.config.http.insert_squid_x_forwarded_for INT 1
-CONFIG proxy.config.http.push_method_enabled INT 0
+CONFIG proxy.config.http.push_method_enabled INT 1
 CONFIG proxy.config.http.cache.http INT 1
 CONFIG proxy.config.http.cache.ignore_client_cc_max_age INT 1
 CONFIG proxy.config.http.normalize_ae INT 1
