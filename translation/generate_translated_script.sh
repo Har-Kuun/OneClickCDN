@@ -57,7 +57,7 @@ function say
 echo 
 say @B"Please input path to the original OneClickCDN script file:" yellow
 read original_script
-echo @B"Please input path to the language file:" yellow
+say @B"Please input path to the language file:" yellow
 read language_file
 echo 
 
