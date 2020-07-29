@@ -54,7 +54,7 @@ How would you like to proceed?|请输入您的选项。
 I know the absolute path to my certificate files (private key, certificate, CA chain (optional)).|我知道我的证书文件的路径（私钥，证书，CA中间链证书（可选）），我想提供我自己的证书。
 I have pointed my domain name to this server, and I want a free Let's Encrypt certificate.|我已经将我的域名指向了该服务器的IP, 我想生成免费的Let's Encrypt证书。
 I forgot the path to my certificate files, so I need to go back to SSH and find them; or I do not need SSL certificate for this domain.|我不记得证书文件放在哪儿了，得去找找；或者我暂时不想为该域名设置SSL.
-Please select|请选择
+
 Error!|错误!
 Please specify your website domain name (e.g., example.com):|请输入您网站的域名（比如example.com）：
 Would you like to configure SSL certificates for domain name \${cdn_hostname_add} now?|您是否想要现在为\${cdn_hostname_add}配置SSL证书？
@@ -119,7 +119,7 @@ One URL per line. Please include|一条URL一行。请包含
 Completed!|已完成！
 Purging results have been saved to \${purge_object_list_result_file}.|移除缓存结果已储存至\${purge_object_list_result_file}。
 The file you specified does not exist.|您输入的文件不存在。
-Please check.|请核查。
+
 Please input the URL to the object that you'd like to push into cache.|
 Object $push_object_url successfully pushed into cache!|
 Pushing $push_object_url failed.|
@@ -220,3 +220,5 @@ Cache rules|缓存规则
 You can use|您可以使用
 to display the result file.|来读取结果文件。
 Please check the above log.|请检查上面的日志。
+Please select|请选择
+Please check.|请核查。
