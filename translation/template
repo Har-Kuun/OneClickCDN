@@ -1,0 +1,217 @@
+You can change the Traffic Server source file download link here.|
+Check https://www.apache.org/dyn/closer.cgi/trafficserver for the latest stable version.|
+You can enable an experimental feature: reverse proxy for any website.|
+Please note that this feature is kind of buggy; you might have to manually modify some mapping rules if necessary.|
+If you wish to turn on this feature, set the value for the variable below to ON, and use the special key in the main function to add reverse proxy instances.|
+By default, this script only works on Ubuntu 20, Debian 10, and CentOS 7/8.|
+You can disable the OS check switch below and tweak the code yourself to try to install it in other OS versions.|
+Please do note that if you choose to use this script on OS other than Ubuntu 20, Debian 10, or CentOS 7/8, you might mess up your OS.  Please keep a backup of your server before installation.|
+Support of Ubuntu 18 is experimental.  You may get error in TLS handshakes.|
+Please consider upgrading to Ubuntu 20 (simply run \"do-release-upgrade -d\").|
+Please tweak the OS_CHECK_ENABLED setting if you still wish to install on Ubuntu 18.|
+Sorry, this script only supports Ubuntu 20 and Debian 10.|
+Support of Debian 10 is experimental.  Please report bugs.|
+Support of Debian 9 is experimental.  You may get error in TLS handshakes.|
+Please tweak the OS_CHECK_ENABLED setting if you still wish to install on Debian 9.|
+Support of CentOS 8 is experimental.  Please report bugs.|
+Please try disabling selinux or firewalld if you cannot visit your website.|
+Support of CentOS 7 is experimental.  Please report bugs.|
+Please try disabling selinux or firewalld if you cannot visit your website.|
+Sorry, this script only supports Ubuntu 20, Debian 10, and CentOS 7/8.|
+Starting Traffic Server installation...|
+Removing Nginx and Apache...|
+Installing depedencies...|
+Start building Traffic Server from source...|
+Dependencies met!|
+Compiling now...|
+Missing dependencies.|
+Please check log, install required dependencies, and run this script again.|
+Please also consider to report your log here https://github.com/Har-Kuun/OneClickCDN/issues so that I can fix this issue.|
+Thank you!|
+Traffic Server successfully installed!|
+Traffic Server installation failed.|
+Please check the above log for reasons.|
+Traffic Server successfully started!|
+Please specify RAM cache size.|
+The unit is MB.  Please type an integer only.|
+The recommended value is 200 per GB of RAM on your server.|
+Please type an integer only.|
+RAM cache size set to ${ram_cache_size}M.|
+Please specify disk cache size.|
+The recommended value is at least 2048.|
+Disk cache size set to ${disk_cache_size}M.|
+Disk cache size set to 256M.|
+Performing disk cache partitioning...|
+Disk cache partitioned.|
+Cache rules updated!|
+Traffic Server will cache dynamic content.|
+Adding mapping rules for ${proxy_hostname} as a reverse proxy of ${origin_hostname}...
+3 rules added.|
+Adding mapping rules for ${cdn_hostname}...|
+2 rules added.|
+Please specify your proxy domain name (e.g., proxy.example.com):|
+Please specify the origin website domain name (e.g., origin.example.com):|
+Please specify the origin website IP address (e.g., 88.88.88.88).  If it has multiple IPs, any would work:|
+Is the origin website using HTTPS or HTTP?  Type 1 for HTTPS, or 2 for HTTP.  If both works, then either is fine:|
+Would you like to configure SSL certificates for domain name ${proxy_hostname_add} now?|
+We can set up SSL with your own certificates, or can issue a free Let's Encrypt SSL certificate for you, if you have already pointed your domain to this server.|
+How would you like to proceed?|
+1: I know the absolute path to my certificate files (private key, certificate, CA chain (optional)).|
+2: I have pointed my domain name to this server, and I want a free Let's Encrypt certificate.|
+3: I forgot the path to my certificate files, so I need to go back to SSH and find them; or I do not need SSL certificate for this domain.|
+Please select 1, 2, or 3:|
+Error!|
+Please specify your website domain name (e.g., example.com):|
+Would you like to configure SSL certificates for domain name ${cdn_hostname_add} now?|
+Please specify your domain name (e.g., qing.su):|
+Please specify the origin server IP address (e.g., 88.88.88.88):|
+No problem!  Please take your time and find your certificates.|
+You can always run this script again and set up SSL certificates for your instances later.|
+Simply choose Option 4 in the main menu.|
+Thank you for using this script!  Have a nice day!|
+Please specify your private key file location (e.g., /etc/certs/qing.su.key):|
+Please specify your certificate file location (e.g., /etc/certs/qing.su.crt):|
+Is your certificate chained? (i.e., are CA-certficates already included in your certificate file?) [Y/N]:|
+Please specify your CA-certificates file location (e.g., /etc/certs/qing.su.ca-bundle):|
+Configuring SSL certificates for $2...|
+SSL certificates successfully configured.|
+Origin IP:|
+Private key file:|
+Certificate file:|
+Intermediate certificate:|
+SSL configuration failed!|
+Please check the above log.|
+Starting to issue free certificate from Let's Encrypt...|
+Please keep in mind that this feature is experimental...|
+Stopping trafficserver...|
+Please input your e-mail address:|
+Let's Encrypt SSL configuration failed!|
+General configurations:|
+Mapping rules:|
+Cache rules:|
+Disk cache size:|
+Log files location:|
+For other configurations, check the official wiki:|
+Do not forget to restart Traffic Server after modifying config files.|
+Simply run: \"trafficserver restart\"|
+Thank you.  Press return key to continue.|
+Please specify the website that you would like to check stats.|
+Note: type in the Origin IP:Port of the origin website.|
+For example, 88.88.88.88:443.|
+Please specify:|
+View Traffic Server stats: traffic_top|
+Start/stop/restart Traffic Server: trafficserver start/stop/restart|
+Check whether Traffic Server is running: trafficserver status|
+Decode via header: traffic_via '[xXxXxX]'
+Reload Traffic Server config files: traffic_ctl config reload|
+You can always run this script again to add a CDN website, configure SSL certificates, check stats, etc.|
+Press return key to continue.|
+Setting up header rewriter...|
+Header rewriter plugin enabled!|
+Setting up cross-origin resource sharing headers...|
+CORS header added!|
+How would you like your server to be called?|
+OK.  Setting server header now...|
+Stopping Traffic Server...|
+Purging all cache...|
+Cache purged successfully.|
+Starting Traffic Server...|
+Please input the URL to the object that you'd like to purge from cache.|
+Please INCLUDE \"http://\" or \"https://\".|
+Object ${purge_object_url} successfully purged from cache!|
+Purging ${purge_object_url} failed.|
+Object not exist or already purged from cache.|
+Domain name $purge_object_domain_name does not exist on this server.|
+Press enter to return to the main menu.|
+You are about to purge a list of objects from cache.|
+Please specify the absolute path to the file containing the URL of objects.|
+One URL per line. Please include \"http://\" or \"https://\".|
+Completed!|
+Purging results have been saved to ${purge_object_list_result_file}.|
+You can use \"cat ${purge_object_list_result_file}\" to display the result file.|
+The file you specified does not exist.|
+Please check.|
+Press enter to return to the main menu.|
+Please input the URL to the object that you'd like to push into cache.|
+Object $push_object_url successfully pushed into cache!|
+Pushing $push_object_url failed.|
+The requested URL cannot be fetched from the Origin server.|
+Domain name $push_object_domain_name does not exist on this server.|
+You are about to push a list of objects into cache.|
+Pushing results have been saved to ${push_object_list_result_file}.|
+You can use \"cat ${push_object_list_result_file}\" to display the result file.|
+This submenu allows you to add/remove objects to/from cache.|
+Advanced cache control.|
+Purge all cache.|
+Remove a single object from cache.|
+Remove a list of objects from cache.|
+Push a single object into cache. (experimental)|
+Push a list of objects into cache. (experimental)|
+Return to main menu.|
+Please select 1/2/3/4/5/0:|
+Please tell me your old Origin server IP.  No domain name required.|
+OK.  Then tell me your new Origin server IP.  No domain name required.|
+IP changed from ${old_ip} to ${new_ip}|
+Are you sure to reconfigure Traffic Server?|
+All previous configurations will be cleared.|
+Mapping rules and SSL certificate settings will be kept.|
+Would you like to continue? |
+Configuring Traffic Server...|
+Would you like to configure cache rules automatically?|
+Configuring cache rules...|
+Cache rules configured successfully.|
+You can configure cache rules manually at /etc/trafficserver/cache.config.  Make sure to run \"trafficserver restart\" after changing the cache rules.|
+Configuring cache size...|
+Would you like Traffic Server to cache dynamic content?|
+Updating cache rules...|
+Traffic Server will not cache dynamic content!|
+Would you like to enable \"Allow-Control-Allow-Origin\" header (CORS)|
+Please choose Y if you have no idea what it is.|
+CORS not configured.|
+The \"server\" header can be a short phrase, like \"shc-cdn-server 1.0.0\", or \"Traffic Server 8.0.8\".|
+If you do not change it, the default value is \"ATS/${TS_VERSION}\"|
+Would you like to change it?|
+Server header tag value not changed.|
+Configuration successfully finished!|
+Traffic Server not reconfigured.|
+What is the domain name that you wish to renew Let's Encrypt certificate?|
+Renewing SSL certificate for ${renew_le_domain}...|
+SSL certificate for ${renew_le_domain} successfully renewed.|
+Please specify the domain name of the website that you would like to remove.|
+Do NOT include \"http\" or \"https\".|
+You are about to delete website ${website_to_be_deleted} from this CDN server.|
+Please note that all configurations, as well as SSL certificate files associated with this domain name will be removed.|
+Are you sure to continue?|
+Removing website from server...|
+Website removed!|
+Restarting Traffic Server...|
+Website not removed!|
+Restarting Traffic Server now...|
+Thank you for using this script written by https://qing.su|
+You can always run this script again to add a CDN website, configure SSL certificates, list current websites, check stats, etc.|
+Bye!  Have a nice day.|
+Your OS is $OS|
+Checking Traffic Server installation|
+Traffic Server not installed.  Would you like to install it now?|
+Depending on your server specs, you may or may not need to add some SWAP before you proceed.|
+This script needs 1500 MB of RAM for the first time to build from source.  It runs perfectly on a 512 MB VPS once it finishes the installation.|
+If you think you don't have enough RAM now, please quit, add more SWAP, and run this script again.|
+Please indicate if you would like to install now:|
+Aborted!|
+Please proceed to the next step and add your first CDN website.|
+Traffic Server installed and running!|
+How can I help you today?|
+List all current CDN websites.|
+Advanced cache control.|
+Add a CDN website.|
+Configure SSL for a website.|
+Locate configuration and log files.|
+View stats of a website.|
+List useful commands.|
+Display author information.|
+Change IP address of a website.|
+Remove a CDN website.|
+Reconfigure Traffic Server.|
+Renew Let's Encrypt certificates.|
+Save all changes and quit this script.|
+Please select|
