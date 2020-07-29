@@ -93,7 +93,7 @@ done < $language_file
 
 echo 
 say @B"Translation completed!" green
-say @B "Translated script is saved at ${translated_script}!" green
+say @B"Translated script is saved at ${translated_script}!" green
 echo 
 echo "Thank you for using this script!  Have a nice day!"
 echo 
