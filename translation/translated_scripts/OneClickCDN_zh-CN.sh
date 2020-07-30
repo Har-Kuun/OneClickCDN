@@ -1293,7 +1293,7 @@ function main
 		echo 
 	else
 		echo 
-		say @B"Traffic Server 以安装且正在运行！" green
+		say @B"Traffic Server 已安装且正在运行！" green
 		restart_switch=0
 		echo 
 	fi
