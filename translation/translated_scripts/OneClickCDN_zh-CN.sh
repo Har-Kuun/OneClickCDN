@@ -249,7 +249,7 @@ function install_TS_CentOS
 	chmod 0760 /etc/trafficserver/ssl
 	cd ${current_dir}
 	ldconfig
-	trafficserver start
+	/usr/local/bin/trafficserver start
 	echo 
 	say @B"Traffic Server 启动成功！" green
 	echo "Domain		Type(CDN/RevProxy)		OriginIP" > /etc/trafficserver/hostsavailable.sun
