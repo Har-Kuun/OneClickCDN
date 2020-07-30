@@ -74,7 +74,7 @@ if [ ! -f $language_file ] ; then
 	exit 1
 elif [ ! -f $translated_script ] ; then
 	say "Error processing original script." red
-	say "The original script must be store in a directory that you have write permission." red
+	say "The original script must be stored in a directory that you have write permission." red
 	exit 1
 fi
 
