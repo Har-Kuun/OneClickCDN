@@ -595,7 +595,7 @@ function config_ssl_later
 	echo "No problem!  Please take your time and find your certificates."
 	echo "You can always run this script again and set up SSL certificates for your instances later."
 	echo "Simply choose Option 4 in the main menu."
-	trafficserver restart
+	/usr/local/bin/trafficserver restart
 	echo "Thank you for using this script!  Have a nice day!"
 	exit 0
 }
@@ -667,7 +667,7 @@ function config_ssl_le
 	echo "Stopping trafficserver..."
 	echo "Please input your e-mail address: "
 	read email_le
-	trafficserver stop
+	/usr/local/bin/trafficserver stop
 	systemctl stop trafficserver
 	certbot certonly --standalone --agree-tos --email $email_le -d $hostname_le
 	cp /etc/letsencrypt/live/${hostname_le}/fullchain.pem /etc/trafficserver/ssl/${hostname_le}.crt
@@ -688,7 +688,7 @@ function config_ssl_le
 	chown -R nobody /etc/trafficserver/ssl/
 	chmod -R 0760 /etc/trafficserver/ssl/
 	systemctl start trafficserver
-	trafficserver start
+	/usr/local/bin/trafficserver start
 	echo 
 }
 
@@ -778,12 +778,12 @@ function clear_all_cache
 {
 	echo 
 	echo "Stopping Traffic Server..."
-	trafficserver stop
+	/usr/local/bin/trafficserver stop
 	echo "Purging all cache..."
 	traffic_server -Cclear
 	say @B"Cache purged successfully." green
 	echo "Starting Traffic Server..."
-	trafficserver start
+	/usr/local/bin/trafficserver start
 	echo 
 }
 
@@ -1064,7 +1064,7 @@ function renew_le_certificate
 	echo "What is the domain name that you wish to renew Let's Encrypt certificate?"
 	read renew_le_domain
 	echo "OK.  Stopping Traffic Server..."
-	trafficserver stop
+	/usr/local/bin/trafficserver stop
 	systemctl stop trafficserver
 	echo 
 	echo "Renewing SSL certificate for ${renew_le_domain}..."
@@ -1078,7 +1078,7 @@ function renew_le_certificate
 	echo 
 	echo "Starting Traffic Server..."
 	systemctl start trafficserver
-	trafficserver start
+	/usr/local/bin/trafficserver start
 	echo 
 }
 
@@ -1111,7 +1111,7 @@ function remove_cdn_website
 		say @B"Website removed!" green
 		echo "Restarting Traffic Server..."
 		echo 
-		trafficserver restart
+		/usr/local/bin/trafficserver restart
 		echo 
 	else
 		echo 
@@ -1125,7 +1125,7 @@ function say_goodbye
 	echo 
 	if [ $restart_switch = 1 ] ; then
 		echo "Restarting Traffic Server now..."
-		trafficserver restart
+		/usr/local/bin/trafficserver restart
 	fi
 	echo 
 	echo "Thank you for using this script written by https://qing.su"
