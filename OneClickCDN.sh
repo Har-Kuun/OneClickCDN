@@ -471,8 +471,10 @@ function config_mapping_cdn
 	echo "Adding mapping rules for ${cdn_hostname}..."
 	if [ "$origin_scheme" = "https" ] ; then
 		echo "redirect http://${cdn_hostname}/ https://${cdn_hostname}/" >> /etc/trafficserver/remap.config
+		echo "map https://${cdn_hostname}/ ${origin_scheme}://${origin_ip}:${origin_port}/" >> /etc/trafficserver/remap.config
+	else
+		echo "map http://${cdn_hostname}/ ${origin_scheme}://${origin_ip}:${origin_port}/" >> /etc/trafficserver/remap.config
 	fi
-	echo "map https://${cdn_hostname}/ ${origin_scheme}://${origin_ip}:${origin_port}/" >> /etc/trafficserver/remap.config
 	say @B"2 rules added." green
 	echo 
 }
