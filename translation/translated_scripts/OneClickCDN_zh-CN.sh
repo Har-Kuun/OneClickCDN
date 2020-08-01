@@ -595,7 +595,7 @@ function config_ssl_later
 	echo "好的，您可以返回SSH查找您的证书文件地址。"
 	echo "您随时可以再次运行此脚本，为您的网站设置SSL证书。"
 	echo "只需在菜单中选择选项4即可。"
-	trafficserver restart
+	/usr/local/bin/trafficserver restart
 	echo "感谢您使用此程序，祝您生活愉快!"
 	exit 0
 }
@@ -667,7 +667,7 @@ function config_ssl_le
 	echo "关闭Traffic Server..."
 	echo "请输入一个邮箱地址: "
 	read email_le
-	trafficserver stop
+	/usr/local/bin/trafficserver stop
 	systemctl stop trafficserver
 	certbot certonly --standalone --agree-tos --email $email_le -d $hostname_le
 	cp /etc/letsencrypt/live/${hostname_le}/fullchain.pem /etc/trafficserver/ssl/${hostname_le}.crt
@@ -688,7 +688,7 @@ function config_ssl_le
 	chown -R nobody /etc/trafficserver/ssl/
 	chmod -R 0760 /etc/trafficserver/ssl/
 	systemctl start trafficserver
-	trafficserver start
+	/usr/local/bin/trafficserver start
 	echo 
 }
 
@@ -778,12 +778,12 @@ function clear_all_cache
 {
 	echo 
 	echo "停止 Traffic Server..."
-	trafficserver stop
+	/usr/local/bin/trafficserver stop
 	echo "正在清除全部缓存..."
 	traffic_server -Cclear
 	say @B"成功清除全部缓存。" green
 	echo "启用 Traffic Server..."
-	trafficserver start
+	/usr/local/bin/trafficserver start
 	echo 
 }
 
@@ -1064,7 +1064,7 @@ function renew_le_certificate
 	echo "请输入您要续期Let's Encrypt证书的域名。"
 	read renew_le_domain
 	echo "OK.  停止 Traffic Server..."
-	trafficserver stop
+	/usr/local/bin/trafficserver stop
 	systemctl stop trafficserver
 	echo 
 	echo "正在为${renew_le_domain}续期SSL证书..."
@@ -1078,7 +1078,7 @@ function renew_le_certificate
 	echo 
 	echo "启用 Traffic Server..."
 	systemctl start trafficserver
-	trafficserver start
+	/usr/local/bin/trafficserver start
 	echo 
 }
 
@@ -1111,7 +1111,7 @@ function remove_cdn_website
 		say @B"网站移除成功！" green
 		echo "重启 Traffic Server..."
 		echo 
-		trafficserver restart
+		/usr/local/bin/trafficserver restart
 		echo 
 	else
 		echo 
@@ -1125,7 +1125,7 @@ function say_goodbye
 	echo 
 	if [ $restart_switch = 1 ] ; then
 		echo "正在重启Traffic Server..."
-		trafficserver restart
+		/usr/local/bin/trafficserver restart
 	fi
 	echo 
 	echo "感谢您使用此脚本。此脚本作者为 https://qing.su"
