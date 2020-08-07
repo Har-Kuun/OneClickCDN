@@ -623,7 +623,7 @@ function config_ssl_non_le
 	read cert_file
 	echo "Is your certificate chained? (i.e., are CA-certficates already included in your certificate file?) [Y/N]:"
 	read is_chained
-	if [ "x${is_chained}" != "xY" ]
+	if [ "x${is_chained}" != "xY" ] && [ "x${is_chained}" != "xy" ]
 	then
 		echo "Please specify your CA-certificates file location (e.g., /etc/certs/qing.su.ca-bundle): "
 		read ca_cert_file
@@ -633,7 +633,7 @@ function config_ssl_non_le
 	cp $priv_key_file /etc/trafficserver/ssl/$1.key
 	cp $cert_file /etc/trafficserver/ssl/$1.crt
 	if [ -f /etc/trafficserver/ssl/$1.crt ] && [ -f /etc/trafficserver/ssl/$1.key ] ; then
-		if [ "x${is_chained}" = "xY" ] ; then
+		if [ "x${is_chained}" = "xY" ] || [ "x${is_chained}" = "xy" ] ; then
 			echo "dest_ip=$2 ssl_cert_name=$1.crt ssl_key_name=$1.key" >> /etc/trafficserver/ssl_multicert.config
 		else
 			cp $ca_cert_file /etc/trafficserver/ssl/$1.ca.crt
