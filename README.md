@@ -10,7 +10,7 @@ A one-click shell script to set up a CDN node for your websites.
 * If you ever used Cloudflare, the CDN nodes created using this script will behave just like Cloudflare servers.  They will sit between clients and your origin server, caching content from the origin server, and serving your clients with content.  You can set up multiple CDN nodes by running this script on each node, and then use GeoDNS with round robin/failover to build a CDN cluster.
 
 ## System requirement
-* A __freshly installed__ server, with Ubuntu 20.04 LTS 64 bit, Debian 10 64 bit, or CentOS 7/8 64 bit system
+* A __freshly installed__ server, with Ubuntu 20.04 LTS 64 bit, Debian 10 64 bit, or CentOS 7/8 64 bit system (see notes for limitations on CentOS 7)
 * __Do NOT install any web server programs (e.g., Apache, Nginx, LiteSpeed, Caddy).  Do NOT install LAMP or LEMP stack.  Do NOT install any admin panels (e.g., cPanel, DirectAdmin, BTcn, VestaCP).  They are NOT compatible with this script.__
 * 1 IPv4
 * At least 512 MB RAM for running CDN instance
@@ -53,3 +53,6 @@ Thank you!
 |07/21/2020|v0.0.3|Add CentOS 7/8 support; add a script to uninstall Traffic Server|
 |07/25/2020|v0.0.4|Add function to remove a website; fix bugs; add colored display|
 |07/28/2020|v0.0.5|Add function to purge cache by URLs; fix bugs and typos|
+
+## Special note
+* TLS 1.3 will NOT work on CentOS 7 because of old OpenSSL version.  You can of course compile OpenSSL v1.1.1 manually, but that will potentially break a lot of other things, and is not recommended.  If TLS 1.3 is required, please consider using CentOS 8, Ubuntu 20, or Debian 10. 
