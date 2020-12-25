@@ -15,8 +15,8 @@
 #您可以在这里修改Traffic Server源码下载链接。
 #查看https://www.apache.org/dyn/closer.cgi/trafficserver获取最新版本链接。
 
-TS_DOWNLOAD_LINK="https://mirrors.ocf.berkeley.edu/apache/trafficserver/trafficserver-8.0.8.tar.bz2"
-TS_VERSION="8.0.8"
+TS_DOWNLOAD_LINK="https://mirrors.ocf.berkeley.edu/apache/trafficserver/trafficserver-8.1.1.tar.bz2"
+TS_VERSION="8.1.1"
 
 
 
