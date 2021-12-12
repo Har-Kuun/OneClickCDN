@@ -34,6 +34,11 @@ sudo bash OneClickCDN.sh
 ```
 wget https://raw.githubusercontent.com/Har-Kuun/OneClickCDN/master/uninstall.sh && sudo bash uninstall.sh
 ```
+* You can now backup and restore your settings (including SSL certificates) among your CDN nodes.  Simply run:
+```
+wget https://raw.githubusercontent.com/Har-Kuun/OneClickCDN/master/ConfigurationBackupRestore.sh && sudo bash ConfigurationBackupRestore.sh
+```
+Follow the instruction on the screen, and you can backup or restore settings including SSL certificates.
 
 ## Contact me
 You can open an issue here if there is any problem/bug when you use it, or would like a new feature to be implemented.
