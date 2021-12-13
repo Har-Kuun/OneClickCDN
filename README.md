@@ -7,10 +7,11 @@ A one-click shell script to set up a CDN node for your websites.
 * Install SSL certificates
 * One-click free SSL certificates from Let's Encrypt
 * Manage websites, view stats, purge caches...
+* Backup configurations (including SSL certificates) and restore on other nodes to quickly deploy multiple CDN nodes
 * If you ever used Cloudflare, the CDN nodes created using this script will behave just like Cloudflare servers.  They will sit between clients and your origin server, caching content from the origin server, and serving your clients with content.  You can set up multiple CDN nodes by running this script on each node, and then use GeoDNS with round robin/failover to build a CDN cluster.
 
 ## System requirement
-* A __freshly installed__ server, with Ubuntu 20.04 LTS 64 bit, Debian 10 64 bit, or CentOS 7/8 64 bit system (see notes for limitations on CentOS 7)
+* A __freshly installed__ server, with Ubuntu 20.04 LTS 64 bit, Debian 10/11 64 bit, or CentOS 7/8 64 bit system (see notes for limitations on CentOS 7)
 * __Do NOT install any web server programs (e.g., Apache, Nginx, LiteSpeed, Caddy).  Do NOT install LAMP or LEMP stack.  Do NOT install any admin panels (e.g., cPanel, DirectAdmin, BTcn, VestaCP).  They are NOT compatible with this script.__
 * 1 IPv4
 * At least 512 MB RAM for running CDN instance
@@ -34,11 +35,7 @@ sudo bash OneClickCDN.sh
 ```
 wget https://raw.githubusercontent.com/Har-Kuun/OneClickCDN/master/uninstall.sh && sudo bash uninstall.sh
 ```
-* You can now backup and restore your settings (including SSL certificates) among your CDN nodes.  Simply run:
-```
-wget https://raw.githubusercontent.com/Har-Kuun/OneClickCDN/master/ConfigurationBackupRestore.sh && sudo bash ConfigurationBackupRestore.sh
-```
-Follow the instruction on the screen, and you can backup or restore settings including SSL certificates.
+
 
 ## Contact me
 You can open an issue here if there is any problem/bug when you use it, or would like a new feature to be implemented.
@@ -49,7 +46,7 @@ For faster response, you can leave a message on this project webpage https://qin
 Thank you!
 
 ## Update log
- __Current version: v0.0.5__
+ __Current version: v0.1.0__
 
 |Date|Version|Changes|
 |---|---|---|
@@ -58,6 +55,7 @@ Thank you!
 |07/21/2020|v0.0.3|Add CentOS 7/8 support; add a script to uninstall Traffic Server|
 |07/25/2020|v0.0.4|Add function to remove a website; fix bugs; add colored display|
 |07/28/2020|v0.0.5|Add function to purge cache by URLs; fix bugs and typos|
+|12/12/2021|v0.1.0|Add Debian 11 support; add backup and restore function|
 
 ## Special note
 * TLS 1.3 will NOT work on CentOS 7 because of old OpenSSL version.  You can of course compile OpenSSL v1.1.1 manually, but that will potentially break a lot of other things, and is not recommended.  If TLS 1.3 is required, please consider using CentOS 8, Ubuntu 20, or Debian 10. 
