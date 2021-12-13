@@ -16,8 +16,8 @@
 #If you changed the download link when installing the script, please also change the link here to match the Traffic Server version you installed.
 #If you did not change the download link during the installation, simply leave it as is.
 
-TS_DOWNLOAD_LINK="https://mirrors.ocf.berkeley.edu/apache/trafficserver/trafficserver-8.0.8.tar.bz2"
-TS_VERSION="8.0.8"
+TS_DOWNLOAD_LINK="https://mirrors.ocf.berkeley.edu/apache/trafficserver/trafficserver-8.1.1.tar.bz2"
+TS_VERSION="8.1.1"
 
 
 #########################################################################
