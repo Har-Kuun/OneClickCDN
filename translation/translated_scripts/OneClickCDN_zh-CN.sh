@@ -1,6 +1,6 @@
 #!/bin/bash
 #################################################################
-#    One-click CDN Installation Script v0.0.5                   #
+#    One-click CDN Installation Script v0.1.0                   #
 #    Written by shc (https://qing.su)                           #
 #    Github link: https://github.com/Har-Kuun/OneClickCDN       #
 #    Contact me: https://t.me/hsun94   E-mail: hi@qing.su       #
@@ -15,8 +15,8 @@
 #您可以在这里修改Traffic Server源码下载链接。
 #查看https://www.apache.org/dyn/closer.cgi/trafficserver获取最新版本链接。
 
-TS_DOWNLOAD_LINK="https://mirrors.ocf.berkeley.edu/apache/trafficserver/trafficserver-8.1.1.tar.bz2"
-TS_VERSION="8.1.1"
+TS_DOWNLOAD_LINK="https://downloads.apache.org/trafficserver/trafficserver-8.1.3.tar.bz2"
+TS_VERSION="8.1.3"
 
 
 
@@ -84,9 +84,16 @@ function check_OS
 				echo 
 				exit 1
 			else
-				say "很抱歉，改脚本仅支持Ubuntu 20, Debian 10与CentOS 7/8." red
-				echo 
-				exit 1
+				cat /etc/debian_version | grep "^11." >/dev/null
+				if [ $? = 0 ] ; then
+					OS=DEBIAN11
+					echo "本脚本仅实验性地支持Debian 11, 如有bug欢迎汇报。"
+					echo 
+				else
+					say "很抱歉，改脚本仅支持Ubuntu 20, Debian 10/11与CentOS 7/8." red
+					echo 
+					exit 1
+				fi
 			fi
 		fi
 	elif [ -f /etc/redhat-release ] ; then
@@ -607,7 +614,7 @@ function display_license
 	echo 
 	echo '*******************************************************************'
 	echo '*       One-click CDN installation script                         *'
-	echo '*       Version 0.0.5                                             *'
+	echo '*       Version 0.1.0                                             *'
 	echo '*       Author: shc (Har-Kuun) https://qing.su                    *'
 	echo '*       https://github.com/Har-Kuun/OneClickCDN                   *'
 	echo '*       Thank you for using this script.  E-mail: hi@qing.su      *'
@@ -1209,6 +1216,83 @@ END
 	systemctl enable trafficserver.service
 }
 
+function backupConfiguration
+{
+	echo 
+	say @B"备份Trafficserver配置信息..." yellow
+	BackupFileName=OneClickCDN$(date +"%Y%m%d").tar.gz
+	tar zcf $CurrentDir/$BackupFileName /usr/local/etc/trafficserver
+	sleep 1
+	cd /tmp && tar zxf $CurrentDir/$BackupFileName
+	if [ -f /tmp/usr/local/etc/trafficserver/records.config ] ; then
+		say @B"Trafficserver配置信息已备份于 $CurrentDir/$BackupFileName" green
+		echo 
+	else
+		say "备份失败，请重试。" red
+		echo 
+	fi
+}
+
+function restoreBackup_localFile
+{
+	echo 
+	say @B"请输入您的拓展名为.tar.gz的Trafficserver配置信息本地备份文件路径。" yellow
+	read backupFilePath
+	if [ -f $backupFilePath ] ; then
+		echo 
+		say @B"导入配置信息中..." green
+		tar zcf $CurrentDir/OneClickCDN$(date +"%Y%m%d").tar.gz /usr/local/etc/trafficserver
+		cd /tmp && tar zxf $backupFilePath
+		cd /usr/local/etc/trafficserver && rm -fr *
+		cp -rf /tmp/usr/local/etc/trafficserver/* .
+		sleep 2
+		if [ -f /usr/local/etc/trafficserver/records.config ] ; then
+			say @B"Trafficserver配置信息已从备份文件中成功导入。" green
+			chown -R nobody /etc/trafficserver/ssl/
+			chmod -R 0760 /etc/trafficserver/ssl/
+			/usr/local/bin/trafficserver restart
+			echo 
+		else
+			say "从备份文件中导入Trafficserver配置信息失败，请检查您的备份文件并重试。" red
+			echo 
+		fi
+	else
+		say "配置信息备份文件路径有误，请重试。" red
+		echo 
+	fi
+}
+
+function restoreBackup_onlineFile
+{
+	echo 
+	say @B"请输入Trafficserver配置信息备份文件的URL，(包含 https:// or http://), 备份文件的URL应为.tar.gz文件的直链。" yellow
+	read backupFileURL
+	echo 
+	cd /tmp && d_status=$(curl -sw '%{http_code}' $backupFileURL -o OneClickCDNRestore_tmp.tar.gz)
+	if [ "$d_status" = "200" ] ; then
+		echo 
+		say @B"下载并导入备份文件中..." green
+		tar zcf $CurrentDir/OneClickCDN$(date +"%Y%m%d").tar.gz /usr/local/etc/trafficserver
+		cd /tmp && tar zxf OneClickCDNRestore_tmp.tar.gz
+		cd /usr/local/etc/trafficserver && rm -fr *
+		cp -rf /tmp/usr/local/etc/trafficserver/* .
+		sleep 2
+		if [ -f /usr/local/etc/trafficserver/records.config ] ; then
+			say @B"Trafficserver配置信息已从备份文件中成功导入。" green
+			chown -R nobody /etc/trafficserver/ssl/
+			chmod -R 0760 /etc/trafficserver/ssl/
+			/usr/local/bin/trafficserver restart
+			echo 
+		else
+			say "从备份文件中导入Trafficserver配置信息失败，请检查您的备份文件并重试。" red
+			echo 
+		fi
+	else
+		say "文件获取错误: $d_status.  请检查URL后重试。" red
+		echo 
+	fi
+}
+
 function main
 {
 	current_dir=$(pwd)
@@ -1315,7 +1399,10 @@ function main
 		echo "11 - 更改网站IP地址。"
 		echo "12 - 移除一个CDN网站。"
 		echo "13 - 重新配置 Traffic Server."
-		echo "14 - 续期Let's Encrypt证书"
+		echo "14 - 续期Let's Encrypt证书。"
+		echo "21 - 将Trafficserver配置信息数据备份至文件。"
+		echo "22 - 从本地服务器的备份文件中导入Trafficserver配置信息数据。"
+		echo "23 - 从URL链接指向的备份文件中导入Trafficserver配置信息数据。"
 		echo "0 - 保存所有修改并退出此脚本。"
 		echo "请选择 1/2/3/4/5/6/7/8/11/12/13/14/0: "
 		read key
@@ -1355,6 +1442,12 @@ function main
 						;;
 			14 )		renew_le_certificate
 						;;
+			21 )		backupConfiguration
+						;;
+			22 )		restoreBackup_localFile
+						;;
+			23 )		restoreBackup_onlineFile
+						;;
 			0 ) 		say_goodbye
 						;;
 		esac
@@ -1368,4 +1461,5 @@ function main
 #                                                             #
 ###############################################################
 
+CurrentDir=$(pwd)
 main
