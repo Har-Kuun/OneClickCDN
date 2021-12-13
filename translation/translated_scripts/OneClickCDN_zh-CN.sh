@@ -1404,7 +1404,7 @@ function main
 		echo "22 - 从本地服务器的备份文件中导入Trafficserver配置信息与SSL证书。"
 		echo "23 - 从URL链接指向的备份文件中导入Trafficserver配置信息与SSL证书。"
 		echo "0 - 保存所有修改并退出此脚本。"
-		echo "请选择 1/2/3/4/5/6/7/8/11/12/13/14/0: "
+		echo "请选择 1/2/3/4/5/6/7/8/11/12/13/14/21/22/23/0: "
 		read key
 		case $key in 
 			1 ) 		echo 
