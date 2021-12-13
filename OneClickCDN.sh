@@ -1,6 +1,6 @@
 #!/bin/bash
 #################################################################
-#    One-click CDN Installation Script v0.0.5                   #
+#    One-click CDN Installation Script v0.1.0                   #
 #    Written by shc (https://qing.su)                           #
 #    Github link: https://github.com/Har-Kuun/OneClickCDN       #
 #    Contact me: https://t.me/hsun94   E-mail: hi@qing.su       #
@@ -15,8 +15,8 @@
 #You can change the Traffic Server source file download link here.
 #Check https://www.apache.org/dyn/closer.cgi/trafficserver for the latest stable version.
 
-TS_DOWNLOAD_LINK="https://mirrors.ocf.berkeley.edu/apache/trafficserver/trafficserver-8.1.1.tar.bz2"
-TS_VERSION="8.1.1"
+TS_DOWNLOAD_LINK="https://downloads.apache.org/trafficserver/trafficserver-8.1.3.tar.bz2"
+TS_VERSION="8.1.3"
 
 
 
@@ -28,7 +28,7 @@ REVERSE_PROXY_MODE_ENABLED=OFF
 
 
 
-#By default, this script only works on Ubuntu 20, Debian 10, and CentOS 7/8.
+#By default, this script only works on Ubuntu 20, Debian 10/11, and CentOS 7/8.
 #You can disable the OS check switch below and tweak the code yourself to try to install it in other OS versions.
 #Please do note that if you choose to use this script on OS other than Ubuntu 20, Debian 10, or CentOS 7/8, you might mess up your OS.  Please keep a backup of your server before installation.
 
@@ -64,7 +64,7 @@ function check_OS
 			then
 				OS=UBUNTU20
 			else
-				say "Sorry, this script only supports Ubuntu 20 and Debian 10." red
+				say "Sorry, this script only supports Ubuntu 20 and Debian 10/11." red
 				echo 
 				exit 1
 			fi
@@ -84,9 +84,16 @@ function check_OS
 				echo 
 				exit 1
 			else
-				say "Sorry, this script only supports Ubuntu 20 and Debian 10." red
-				echo 
-				exit 1
+				cat /etc/debian_version | grep "^11." >/dev/null
+				if [ $? = 0 ] ; then
+					OS=DEBIAN11
+					echo "Support of Debian 11 is experimental.  Please report bugs."
+					echo 
+				else
+					say "Sorry, this script only supports Ubuntu 20 and Debian 10/11." red
+					echo 
+					exit 1
+				fi
 			fi
 		fi
 	elif [ -f /etc/redhat-release ] ; then
@@ -104,13 +111,13 @@ function check_OS
 				echo "Please try disabling selinux or firewalld if you cannot visit your website."
 				echo 
 			else
-				echo "Sorry, this script only supports Ubuntu 20, Debian 10, and CentOS 7/8."
+				echo "Sorry, this script only supports Ubuntu 20, Debian 10/11, and CentOS 7/8."
 				echo
 				exit 1
 			fi
 		fi
 	else
-		echo "Sorry, this script only supports Ubuntu 20, Debian 10, and CentOS 7/8."
+		echo "Sorry, this script only supports Ubuntu 20, Debian 10/11, and CentOS 7/8."
 		echo 
 		exit 1
 	fi
@@ -607,7 +614,7 @@ function display_license
 	echo 
 	echo '*******************************************************************'
 	echo '*       One-click CDN installation script                         *'
-	echo '*       Version 0.0.5                                             *'
+	echo '*       Version 0.1.0                                             *'
 	echo '*       Author: shc (Har-Kuun) https://qing.su                    *'
 	echo '*       https://github.com/Har-Kuun/OneClickCDN                   *'
 	echo '*       Thank you for using this script.  E-mail: hi@qing.su      *'
@@ -1209,6 +1216,83 @@ END
 	systemctl enable trafficserver.service
 }
 
+function backupConfiguration
+{
+	echo 
+	say @B"Backing up Trafficserver configurations..." yellow
+	BackupFileName=OneClickCDN$(date +"%Y%m%d").tar.gz
+	tar zcf $CurrentDir/$BackupFileName /usr/local/etc/trafficserver
+	sleep 1
+	cd /tmp && tar zxf $CurrentDir/$BackupFileName
+	if [ -f /tmp/usr/local/etc/trafficserver/records.config ] ; then
+		say @B"Configuration successfully backed up at $CurrentDir/$BackupFileName" green
+		echo 
+	else
+		say "Backup failed.  Please try again." red
+		echo 
+	fi
+}
+
+function restoreBackup_localFile
+{
+	echo 
+	say @B"Please input path to your Trafficserver configuration backup file, ending in .tar.gz" yellow
+	read backupFilePath
+	if [ -f $backupFilePath ] ; then
+		echo 
+		say @B"Restoring backup..." green
+		tar zcf $CurrentDir/OneClickCDN$(date +"%Y%m%d").tar.gz /usr/local/etc/trafficserver
+		cd /tmp && tar zxf $backupFilePath
+		cd /usr/local/etc/trafficserver && rm -fr *
+		cp -rf /tmp/usr/local/etc/trafficserver/* .
+		sleep 2
+		if [ -f /usr/local/etc/trafficserver/records.config ] ; then
+			say @B"Configuration successfully restored from backup file." green
+			chown -R nobody /etc/trafficserver/ssl/
+			chmod -R 0760 /etc/trafficserver/ssl/
+			/usr/local/bin/trafficserver restart
+			echo 
+		else
+			say "Failed to restore configuration file from backup.  Please try again." red
+			echo 
+		fi
+	else
+		say "Cannot find Trafficserver configuration backup file.  Please try again." red
+		echo 
+	fi
+}
+
+function restoreBackup_onlineFile
+{
+	echo 
+	say @B"Please input URL (including https:// or http://) of your Trafficserver configuration backup file, ending in .tar.gz" yellow
+	read backupFileURL
+	echo 
+	cd /tmp && d_status=$(curl -sw '%{http_code}' $backupFileURL -o OneClickCDNRestore_tmp.tar.gz)
+	if [ "$d_status" = "200" ] ; then
+		echo 
+		say @B"Restoring backup..." green
+		tar zcf $CurrentDir/OneClickCDN$(date +"%Y%m%d").tar.gz /usr/local/etc/trafficserver
+		cd /tmp && tar zxf OneClickCDNRestore_tmp.tar.gz
+		cd /usr/local/etc/trafficserver && rm -fr *
+		cp -rf /tmp/usr/local/etc/trafficserver/* .
+		sleep 2
+		if [ -f /usr/local/etc/trafficserver/records.config ] ; then
+			say @B"Configuration successfully restored from backup file." green
+			chown -R nobody /etc/trafficserver/ssl/
+			chmod -R 0760 /etc/trafficserver/ssl/
+			/usr/local/bin/trafficserver restart
+			echo 
+		else
+			say "Failed to restore configuration file from backup.  Please check your backup file." red
+			echo 
+		fi
+	else
+		say "Download error $d_status.  Please check and try again." red
+		echo 
+	fi
+}
+
 function main
 {
 	current_dir=$(pwd)
@@ -1316,8 +1400,11 @@ function main
 		echo "12 - Remove a CDN website."
 		echo "13 - Reconfigure Traffic Server."
 		echo "14 - Renew Let's Encrypt certificates."
+		echo "21 - Backup Trafficserver configurations to file."
+		echo "22 - Restore Trafficserver configuration from a local backup file."
+		echo "23 - Restore Trafficserver configuration from a URL."
 		echo "0 - Save all changes and quit this script."
-		echo "Please select 1/2/3/4/5/6/7/8/11/12/13/14/0: "
+		echo "Please select 1/2/3/4/5/6/7/8/11/12/13/14/21/22/23/0: "
 		read key
 		case $key in 
 			1 ) 		echo 
@@ -1355,6 +1442,12 @@ function main
 						;;
 			14 )		renew_le_certificate
 						;;
+			21 )		backupConfiguration
+						;;
+			22 )		restoreBackup_localFile
+						;;
+			23 )		restoreBackup_onlineFile
+						;;
 			0 ) 		say_goodbye
 						;;
 		esac
@@ -1368,4 +1461,5 @@ function main
 #                                                             #
 ###############################################################
 
+CurrentDir=$(pwd)
 main
