@@ -1400,9 +1400,9 @@ function main
 		echo "12 - Remove a CDN website."
 		echo "13 - Reconfigure Traffic Server."
 		echo "14 - Renew Let's Encrypt certificates."
-		echo "21 - Backup Trafficserver configurations to file."
-		echo "22 - Restore Trafficserver configuration from a local backup file."
-		echo "23 - Restore Trafficserver configuration from a URL."
+		echo "21 - Backup Trafficserver configurations and certificates to file."
+		echo "22 - Restore Trafficserver configurations and certificates from a local backup file."
+		echo "23 - Restore Trafficserver configurations and certificates from a URL."
 		echo "0 - Save all changes and quit this script."
 		echo "Please select 1/2/3/4/5/6/7/8/11/12/13/14/21/22/23/0: "
 		read key
