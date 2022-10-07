@@ -15,8 +15,8 @@
 #You can change the Traffic Server source file download link here.
 #Check https://www.apache.org/dyn/closer.cgi/trafficserver for the latest stable version.
 
-TS_DOWNLOAD_LINK="https://downloads.apache.org/trafficserver/trafficserver-8.1.3.tar.bz2"
-TS_VERSION="8.1.3"
+TS_DOWNLOAD_LINK="https://downloads.apache.org/trafficserver/trafficserver-8.1.5.tar.bz2"
+TS_VERSION="8.1.5"
 
 
 
