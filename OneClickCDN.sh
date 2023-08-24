@@ -15,8 +15,8 @@
 #You can change the Traffic Server source file download link here.
 #Check https://www.apache.org/dyn/closer.cgi/trafficserver for the latest stable version.
 
-TS_DOWNLOAD_LINK="https://downloads.apache.org/trafficserver/trafficserver-8.1.5.tar.bz2"
-TS_VERSION="8.1.5"
+TS_DOWNLOAD_LINK="https://dlcdn.apache.org/trafficserver/trafficserver-9.2.2.tar.bz2"
+TS_VERSION="9.2.2"
 
 
 
@@ -54,7 +54,7 @@ function check_OS
 		then
 			OS=UBUNTU18
 			echo "Support of Ubuntu 18 is experimental.  You may get error in TLS handshakes."
-			echo "Please consider upgrading to Ubuntu 20 (simply run \"do-release-upgrade -d\")."
+			echo "Please consider upgrading to a later Ubuntu release (simply run \"do-release-upgrade -d\")."
 			echo "Please tweak the OS_CHECK_ENABLED setting if you still wish to install on Ubuntu 18."
 			echo 
 			exit 1
@@ -64,60 +64,73 @@ function check_OS
 			then
 				OS=UBUNTU20
 			else
-				say "Sorry, this script only supports Ubuntu 20 and Debian 10/11." red
-				echo 
-				exit 1
-			fi
-		fi
-	elif [ -f /etc/debian_version ] ; then
-		cat /etc/debian_version | grep "^10." >/dev/null
-		if [ $? = 0 ] ; then
-			OS=DEBIAN10
-			echo "Support of Debian 10 is experimental.  Please report bugs."
-			echo 
-		else
-			cat /etc/debian_version | grep "^9." >/dev/null
-			if [ $? = 0 ] ; then
-				OS=DEBIAN9
-				echo "Support of Debian 9 is experimental.  You may get error in TLS handshakes."
-				echo "Please tweak the OS_CHECK_ENABLED setting if you still wish to install on Debian 9."
-				echo 
-				exit 1
-			else
-				cat /etc/debian_version | grep "^11." >/dev/null
-				if [ $? = 0 ] ; then
-					OS=DEBIAN11
-					echo "Support of Debian 11 is experimental.  Please report bugs."
+				cat /etc/lsb-release | grep "DISTRIB_RELEASE=22." >/dev/null
+				if [ $? -eq 0 ]
+				then
+					OS=UBUNTU22
+					echo "Support of Ubuntu 22 is experimental.  Please report bugs."
 					echo 
 				else
-					say "Sorry, this script only supports Ubuntu 20 and Debian 10/11." red
+					echo "Sorry, this script only supports Ubuntu 20/22, Debian 10/11/12 and CentOS 7/8." red
 					echo 
 					exit 1
 				fi
 			fi
 		fi
-	elif [ -f /etc/redhat-release ] ; then
+	elif [ -f /etc/debian_version ]
+	then
+		cat /etc/debian_version | grep "^10." >/dev/null
+		if [ $? = 0 ]
+		then
+			OS=DEBIAN10
+			echo "Support of Debian 10 is experimental.  Please report bugs."
+			echo 
+		else
+			cat /etc/debian_version | grep "^11." >/dev/null
+			if [ $? = 0 ]
+			then
+				OS=DEBIAN11
+				echo "Support of Debian 11 is experimental.  Please report bugs."
+				echo
+			else
+				cat /etc/debian_version | grep "^12." >/dev/null
+				if [ $? = 0 ]
+				then
+					OS=DEBIAN12
+					echo "Support of Debian 12 is experimental.  Please report bugs."
+					echo
+				else
+					echo "Sorry, this script only supports Ubuntu 20/22, Debian 10/11/12 and CentOS 7/8." red
+					echo
+					exit 1
+				fi
+			fi
+		fi
+	elif [ -f /etc/redhat-release ]
+	then
 		cat /etc/redhat-release | grep " 8." >/dev/null
-		if [ $? = 0 ] ; then
+		if [ $? = 0 ]
+		then
 			OS=CENTOS8
 			echo "Support of CentOS 8 is experimental.  Please report bugs."
 			echo "Please try disabling selinux or firewalld if you cannot visit your website."
 			echo 
 		else
 			cat /etc/redhat-release | grep " 7." >/dev/null
-			if [ $? = 0 ] ; then
+			if [ $? = 0 ]
+			then
 				OS=CENTOS7
 				echo "Support of CentOS 7 is experimental.  Please report bugs."
 				echo "Please try disabling selinux or firewalld if you cannot visit your website."
 				echo 
 			else
-				echo "Sorry, this script only supports Ubuntu 20, Debian 10/11, and CentOS 7/8."
+				echo "Sorry, this script only supports Ubuntu 20/22, Debian 10/11/12, and CentOS 7/8."
 				echo
 				exit 1
 			fi
 		fi
 	else
-		echo "Sorry, this script only supports Ubuntu 20, Debian 10/11, and CentOS 7/8."
+		echo "Sorry, this script only supports Ubuntu 20/22, Debian 10/11/12, and CentOS 7/8."
 		echo 
 		exit 1
 	fi
